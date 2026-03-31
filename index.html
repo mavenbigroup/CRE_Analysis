@@ -4,10 +4,10 @@
 <meta charset="UTF-8"/>
 <meta name="viewport" content="width=device-width,initial-scale=1.0"/>
 <title>CRE Analysis – Maven BI Group</title>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.2.0/umd/react.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.2.0/umd/react-dom.production.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/babel-standalone/7.23.2/babel.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/recharts/2.12.7/Recharts.min.js"></script>
+<script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+<script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+<script src="https://unpkg.com/recharts@2.12.7/umd/Recharts.js"></script>
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet"/>
 <style>
   *{box-sizing:border-box;margin:0;padding:0}
@@ -26,42 +26,40 @@ const {
 } = Recharts;
 const { useState, useMemo, useCallback } = React;
 
-const C = { bg: "#060b14", card: "#0d1321", border: "#1a2540", borderHi: "#2a3a5c", amber: "#f59e0b", amberDim: "#78350f", red: "#ef4444", redDim: "#7f1d1d", green: "#10b981", blue: "#3b82f6", text: "#f1f5f9", muted: "#94a3b8", dim: "#475569", grid: "#1a2540" };
-const PAL = ["#f59e0b","#3b82f6","#ef4444","#10b981","#a78bfa","#ec4899","#06b6d4","#f97316","#84cc16","#e879f9"];
+const C = { bg:"#060b14", card:"#0d1321", border:"#1a2540", borderHi:"#2a3a5c", amber:"#f59e0b", red:"#ef4444", green:"#10b981", blue:"#3b82f6", text:"#f1f5f9", muted:"#94a3b8", dim:"#475569", grid:"#1a2540" };
 const HRS_LO = 5; const HRS_HI = 10;
 
 const rawCR = [
-  { id:1,name:"CR6135",area:"Finance",priority:"High" }, { id:2,name:"CR5867",area:"Finance",priority:"High" }, { id:3,name:"CR6902",area:"Finance",priority:"High" }, { id:4,name:"CR6905",area:"Finance",priority:"High" }, { id:5,name:"CR8123",area:"Finance",priority:"High" }, { id:6,name:"CR8124",area:"Finance",priority:"High" }, { id:7,name:"CR8125",area:"Finance",priority:"High" }, { id:8,name:"CR8126",area:"Finance",priority:"High" }, { id:9,name:"CR8127",area:"Finance",priority:"High" }, { id:10,name:"CR6604",area:"Finance",priority:"High" }, { id:11,name:"CR8205",area:"Finance",priority:"High" }, { id:12,name:"CR7877",area:"Finance",priority:"High" }, { id:13,name:"CR5694",area:"Finance",priority:"High" }, { id:14,name:"CR6354",area:"Finance",priority:"High" }, { id:15,name:"CR7402",area:"Finance",priority:"High" }, { id:16,name:"CR7535",area:"Finance",priority:"High" }, { id:17,name:"CR7557",area:"Finance",priority:"High" }, { id:18,name:"CR7628",area:"Finance",priority:"High" }, { id:19,name:"CR7682",area:"Finance",priority:"High" }, { id:20,name:"CR8004",area:"Finance",priority:"High" }, { id:21,name:"CR4687",area:"GM Reports",priority:"High" }, { id:22,name:"CR5633",area:"GM Reports",priority:"High" }, { id:23,name:"CR7083",area:"GM Reports",priority:"High" }, { id:24,name:"CR6909",area:"GM Reports",priority:"High" }, { id:25,name:"CR4798",area:"Finance",priority:"High" }, { id:26,name:"CR4723",area:"Finance",priority:"High" }, { id:27,name:"CR4812",area:"Finance",priority:"High" }, { id:28,name:"CR5224",area:"Finance",priority:"High" }, { id:29,name:"CR7319",area:"Finance",priority:"High" }, { id:30,name:"CR7929",area:"Finance",priority:"High" }, { id:31,name:"CR8137",area:"Finance",priority:"High" }, { id:32,name:"CR8257",area:"Finance",priority:"High" }, { id:33,name:"CR8473",area:"Finance",priority:"High" }, { id:34,name:"CR8639",area:"Finance",priority:"High" }, { id:35,name:"CR8834",area:"Finance",priority:"High" }, { id:36,name:"CR8866",area:"Finance",priority:"High" }, { id:37,name:"CR8911",area:"Finance",priority:"High" }, { id:38,name:"CR9038",area:"Grants Mgmt",priority:"High" }, { id:39,name:"CR8457",area:"Grants Mgmt",priority:"High" }, { id:40,name:"CR9167",area:"Grants Mgmt",priority:"High" }, { id:41,name:"CR7291",area:"Human Resources",priority:"High" }, { id:42,name:"CR9023",area:"Human Resources",priority:"High" }, { id:43,name:"CR8640",area:"Human Resources",priority:"High" }, { id:44,name:"CR6992",area:"Human Resources",priority:"High" }, { id:45,name:"CR7187",area:"Dept-Specific",priority:"Medium" }, { id:46,name:"CR7824",area:"Dept-Specific",priority:"Medium" }, { id:47,name:"CR8013",area:"Dept-Specific",priority:"Medium" }, { id:48,name:"CR8024",area:"Dept-Specific",priority:"Medium" }, { id:49,name:"CR8025",area:"Dept-Specific",priority:"Medium" }, { id:50,name:"CR8026",area:"Dept-Specific",priority:"Medium" }, { id:51,name:"CR8027",area:"Dept-Specific",priority:"Medium" }, { id:52,name:"CR8230",area:"Dept-Specific",priority:"Medium" }, { id:53,name:"CR 7167",area:"Ops/Purchasing",priority:"Medium" }, { id:54,name:"CR 12201",area:"Dept-Specific",priority:"Medium" }, { id:55,name:"CR5719",area:"Dept-Specific",priority:"Medium" }, { id:56,name:"cr20983",area:"BI Admin",priority:"Low" }, { id:57,name:"CR7682b",area:"Ops/Purchasing",priority:"Medium" }, { id:58,name:"CR8192",area:"Dept-Specific",priority:"Medium" }, { id:59,name:"CR5867b",area:"Student Info",priority:"High" }, { id:60,name:"CR6469",area:"Student Info",priority:"High" }, { id:61,name:"CR5694b",area:"Ops/Purchasing",priority:"Medium" }, { id:62,name:"ZFI_BW_General",area:"Finance",priority:"High" }, { id:63,name:"CR8155",area:"BI Admin",priority:"Low" },
+  {id:1,name:"CR6135",area:"Finance",priority:"High"},{id:2,name:"CR5867",area:"Finance",priority:"High"},{id:3,name:"CR6902",area:"Finance",priority:"High"},{id:4,name:"CR6905",area:"Finance",priority:"High"},{id:5,name:"CR8123",area:"Finance",priority:"High"},{id:6,name:"CR8124",area:"Finance",priority:"High"},{id:7,name:"CR8125",area:"Finance",priority:"High"},{id:8,name:"CR8126",area:"Finance",priority:"High"},{id:9,name:"CR8127",area:"Finance",priority:"High"},{id:10,name:"CR6604",area:"Finance",priority:"High"},
+  {id:11,name:"CR8205",area:"Finance",priority:"High"},{id:12,name:"CR7877",area:"Finance",priority:"High"},{id:13,name:"CR5694",area:"Finance",priority:"High"},{id:14,name:"CR6354",area:"Finance",priority:"High"},{id:15,name:"CR7402",area:"Finance",priority:"High"},{id:16,name:"CR7535",area:"Finance",priority:"High"},{id:17,name:"CR7557",area:"Finance",priority:"High"},{id:18,name:"CR7628",area:"Finance",priority:"High"},{id:19,name:"CR7682",area:"Finance",priority:"High"},{id:20,name:"CR8004",area:"Finance",priority:"High"},
+  {id:21,name:"CR4687",area:"GM Reports",priority:"High"},{id:22,name:"CR5633",area:"GM Reports",priority:"High"},{id:23,name:"CR7083",area:"GM Reports",priority:"High"},{id:24,name:"CR6909",area:"GM Reports",priority:"High"},{id:25,name:"CR4798",area:"Finance",priority:"High"},{id:26,name:"CR4723",area:"Finance",priority:"High"},{id:27,name:"CR4812",area:"Finance",priority:"High"},{id:28,name:"CR5224",area:"Finance",priority:"High"},{id:29,name:"CR7319",area:"Finance",priority:"High"},{id:30,name:"CR7929",area:"Finance",priority:"High"},
+  {id:31,name:"CR8137",area:"Finance",priority:"High"},{id:32,name:"CR8257",area:"Finance",priority:"High"},{id:33,name:"CR8473",area:"Finance",priority:"High"},{id:34,name:"CR8639",area:"Finance",priority:"High"},{id:35,name:"CR8834",area:"Finance",priority:"High"},{id:36,name:"CR8866",area:"Finance",priority:"High"},{id:37,name:"CR8911",area:"Finance",priority:"High"},{id:38,name:"CR9038",area:"Grants Mgmt",priority:"High"},{id:39,name:"CR8457",area:"Grants Mgmt",priority:"High"},{id:40,name:"CR9167",area:"Grants Mgmt",priority:"High"},
+  {id:41,name:"CR7291",area:"Human Resources",priority:"High"},{id:42,name:"CR9023",area:"Human Resources",priority:"High"},{id:43,name:"CR8640",area:"Human Resources",priority:"High"},{id:44,name:"CR6992",area:"Human Resources",priority:"High"},{id:45,name:"CR7187",area:"Dept-Specific",priority:"Medium"},{id:46,name:"CR7824",area:"Dept-Specific",priority:"Medium"},{id:47,name:"CR8013",area:"Dept-Specific",priority:"Medium"},{id:48,name:"CR8024",area:"Dept-Specific",priority:"Medium"},{id:49,name:"CR8025",area:"Dept-Specific",priority:"Medium"},{id:50,name:"CR8026",area:"Dept-Specific",priority:"Medium"},
+  {id:51,name:"CR8027",area:"Dept-Specific",priority:"Medium"},{id:52,name:"CR8230",area:"Dept-Specific",priority:"Medium"},{id:53,name:"CR 7167",area:"Ops/Purchasing",priority:"Medium"},{id:54,name:"CR 12201",area:"Dept-Specific",priority:"Medium"},{id:55,name:"CR5719",area:"Dept-Specific",priority:"Medium"},{id:56,name:"cr20983",area:"BI Admin",priority:"Low"},{id:57,name:"CR7682b",area:"Ops/Purchasing",priority:"Medium"},{id:58,name:"CR8192",area:"Dept-Specific",priority:"Medium"},{id:59,name:"CR5867b",area:"Student Info",priority:"High"},{id:60,name:"CR6469",area:"Student Info",priority:"High"},
+  {id:61,name:"CR5694b",area:"Ops/Purchasing",priority:"Medium"},{id:62,name:"ZFI_BW_General",area:"Finance",priority:"High"},{id:63,name:"CR8155",area:"BI Admin",priority:"Low"},
 ];
 
 const TOTAL = 678;
 const archiveTimeline = [
-  {yq:"2015-Q1",c:7},{yq:"2015-Q2",c:10},{yq:"2015-Q3",c:8},{yq:"2015-Q4",c:10},
-  {yq:"2016-Q1",c:9},{yq:"2016-Q2",c:6},{yq:"2016-Q3",c:4},{yq:"2016-Q4",c:6},
-  {yq:"2017-Q1",c:9},{yq:"2017-Q2",c:2},{yq:"2017-Q3",c:5},{yq:"2017-Q4",c:8},
-  {yq:"2018-Q1",c:5},{yq:"2018-Q2",c:2},{yq:"2018-Q3",c:3},{yq:"2018-Q4",c:8},
-  {yq:"2019-Q1",c:8},{yq:"2019-Q2",c:3},{yq:"2019-Q3",c:7},{yq:"2019-Q4",c:12},
-  {yq:"2020-Q1",c:3},{yq:"2020-Q2",c:6},{yq:"2020-Q3",c:8},{yq:"2020-Q4",c:8},
-  {yq:"2021-Q1",c:2},{yq:"2021-Q2",c:3},{yq:"2021-Q3",c:4},{yq:"2021-Q4",c:4},
-  {yq:"2022-Q1",c:8},{yq:"2022-Q2",c:10},{yq:"2022-Q3",c:7},{yq:"2022-Q4",c:10},
-  {yq:"2023-Q1",c:2},{yq:"2023-Q2",c:6},{yq:"2023-Q3",c:8},{yq:"2023-Q4",c:3},
-  {yq:"2024-Q1",c:7},{yq:"2024-Q2",c:5},{yq:"2024-Q3",c:3},{yq:"2024-Q4",c:5},
-  {yq:"2025-Q1",c:4},{yq:"2025-Q2",c:7},{yq:"2025-Q3",c:5},{yq:"2025-Q4",c:3},
-  {yq:"2026-Q1",c:1},
+  {yq:"2015-Q1",c:7},{yq:"2015-Q2",c:10},{yq:"2015-Q3",c:8},{yq:"2015-Q4",c:10},{yq:"2016-Q1",c:9},{yq:"2016-Q2",c:6},{yq:"2016-Q3",c:4},{yq:"2016-Q4",c:6},
+  {yq:"2017-Q1",c:9},{yq:"2017-Q2",c:2},{yq:"2017-Q3",c:5},{yq:"2017-Q4",c:8},{yq:"2018-Q1",c:5},{yq:"2018-Q2",c:2},{yq:"2018-Q3",c:3},{yq:"2018-Q4",c:8},
+  {yq:"2019-Q1",c:8},{yq:"2019-Q2",c:3},{yq:"2019-Q3",c:7},{yq:"2019-Q4",c:12},{yq:"2020-Q1",c:3},{yq:"2020-Q2",c:6},{yq:"2020-Q3",c:8},{yq:"2020-Q4",c:8},
+  {yq:"2021-Q1",c:2},{yq:"2021-Q2",c:3},{yq:"2021-Q3",c:4},{yq:"2021-Q4",c:4},{yq:"2022-Q1",c:8},{yq:"2022-Q2",c:10},{yq:"2022-Q3",c:7},{yq:"2022-Q4",c:10},
+  {yq:"2023-Q1",c:2},{yq:"2023-Q2",c:6},{yq:"2023-Q3",c:8},{yq:"2023-Q4",c:3},{yq:"2024-Q1",c:7},{yq:"2024-Q2",c:5},{yq:"2024-Q3",c:3},{yq:"2024-Q4",c:5},
+  {yq:"2025-Q1",c:4},{yq:"2025-Q2",c:7},{yq:"2025-Q3",c:5},{yq:"2025-Q4",c:3},{yq:"2026-Q1",c:1},
 ];
 
 const Pill = ({label,value,onClear}) => (
   <span style={{display:"inline-flex",alignItems:"center",gap:6,background:`${C.amber}20`,border:`1px solid ${C.amber}40`,borderRadius:20,padding:"3px 10px",fontSize:11,color:C.dim,fontFamily:"'JetBrains Mono',monospace"}}>
     <span style={{color:C.muted}}>{label}:</span> <span style={{color:C.amber,fontWeight:600}}>{value}</span>
-    <span onClick={onClear} style={{cursor:"pointer",marginLeft:2,padding:"0 3px",borderRadius:4,background:`${C.amber}20`,color:C.dim,fontSize:12,lineHeight:1.4,transition:"all .15s"}}
+    <span onClick={onClear} style={{cursor:"pointer",marginLeft:2,padding:"0 3px",borderRadius:4,background:`${C.amber}20`,color:C.dim,fontSize:12,lineHeight:1.4}}
       onMouseEnter={e=>{e.target.style.background=C.red;e.target.style.color="#fff"}}
-      onMouseLeave={e=>{e.target.style.background=`${C.amber}20`;e.target.style.color=C.dim}}>×</span>
+      onMouseLeave={e=>{e.target.style.background=`${C.amber}20`;e.target.style.color=C.dim}}>x</span>
   </span>
 );
 
 const KPI = ({label,value,sub,hot}) => (
-  <div onMouseEnter={e=>e.currentTarget.style.transform="translateY(-2px)"} onMouseLeave={e=>e.currentTarget.style.transform=""}
-    style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"14px 18px",flex:1,minWidth:140,transition:"transform .15s",position:"relative",overflow:"hidden"}}>
+  <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:8,padding:"14px 18px",flex:1,minWidth:140,position:"relative",overflow:"hidden"}}>
     {hot&&<div style={{position:"absolute",top:0,left:0,right:0,height:2,background:`linear-gradient(90deg,${C.red},${C.amber})`}}/>}
     <div style={{fontSize:10,color:C.dim,textTransform:"uppercase",letterSpacing:1,marginBottom:4,fontFamily:"'JetBrains Mono',monospace"}}>{label}</div>
     <div style={{fontSize:22,fontWeight:700,color:C.amber,fontFamily:"'JetBrains Mono',monospace"}}>{value}</div>
@@ -72,9 +70,9 @@ const KPI = ({label,value,sub,hot}) => (
 const Card = ({title,sub,children,clickHint}) => (
   <div style={{background:C.card,border:`1px solid ${C.border}`,borderRadius:10,padding:20,display:"flex",flexDirection:"column",gap:12}}>
     <div>
-      <div style={{fontSize:13,fontWeight:600,color:C.text,letterSpacing:.3}}>{title}</div>
+      <div style={{fontSize:13,fontWeight:600,color:C.text}}>{title}</div>
       {sub&&<div style={{fontSize:11,color:C.muted,marginTop:2}}>{sub}</div>}
-      {clickHint&&<div style={{fontSize:10,color:C.dim,marginTop:2,fontStyle:"italic"}}>Click to highlight &amp; filter</div>}
+      {clickHint&&<div style={{fontSize:10,color:C.dim,marginTop:2,fontStyle:"italic"}}>Click chart to filter</div>}
     </div>
     {children}
   </div>
@@ -95,115 +93,121 @@ function Dashboard() {
   const [selArea, setSelArea] = useState(null);
   const [selPriority, setSelPriority] = useState(null);
 
-  const filtered = useMemo(() => {
+  const filtered = useMemo(()=>{
     let d = rawCR;
-    if (selArea) d = d.filter(r => r.area === selArea);
-    if (selPriority) d = d.filter(r => r.priority === selPriority);
+    if(selArea) d = d.filter(r=>r.area===selArea);
+    if(selPriority) d = d.filter(r=>r.priority===selPriority);
     return d;
-  }, [selArea, selPriority]);
+  },[selArea,selPriority]);
 
-  const stats = useMemo(() => {
-    const n = filtered.length;
-    return { count:n, hrsLo:n*HRS_LO, hrsHi:n*HRS_HI, fteLo:(n*HRS_LO/160).toFixed(1), fteHi:(n*HRS_HI/160).toFixed(1), high:filtered.filter(r=>r.priority==="High").length, med:filtered.filter(r=>r.priority==="Medium").length, low:filtered.filter(r=>r.priority==="Low").length };
-  }, [filtered]);
+  const stats = useMemo(()=>{
+    const n=filtered.length;
+    return {count:n,hrsLo:n*HRS_LO,hrsHi:n*HRS_HI,fteLo:(n*HRS_LO/160).toFixed(1),fteHi:(n*HRS_HI/160).toFixed(1),high:filtered.filter(r=>r.priority==="High").length,med:filtered.filter(r=>r.priority==="Medium").length,low:filtered.filter(r=>r.priority==="Low").length};
+  },[filtered]);
 
-  const allByArea = useMemo(() => {
-    const m = {};
-    rawCR.forEach(r => { m[r.area] = (m[r.area]||0) + 1; });
-    return Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([name,count])=>({name,count,hours:count*HRS_HI}));
-  }, []);
+  const allByArea = useMemo(()=>{
+    const m={};rawCR.forEach(r=>{m[r.area]=(m[r.area]||0)+1;});
+    return Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([name,count])=>({name,count}));
+  },[]);
 
-  const allByPriority = useMemo(() => [
+  const allByPriority = useMemo(()=>[
     {name:"High",count:rawCR.filter(r=>r.priority==="High").length,fill:C.red},
     {name:"Medium",count:rawCR.filter(r=>r.priority==="Medium").length,fill:C.amber},
     {name:"Low",count:rawCR.filter(r=>r.priority==="Low").length,fill:C.green},
-  ].filter(d=>d.count>0), []);
+  ].filter(d=>d.count>0),[]);
 
-  const byQuarter = useMemo(() => [
-    {quarter:"2026-Q1",reports:stats.high,hours:stats.high*HRS_HI,label:"High Priority",color:C.red},
-    {quarter:"2026-Q2",reports:stats.med,hours:stats.med*HRS_HI,label:"Medium Priority",color:C.amber},
-    {quarter:"2026-Q3",reports:stats.low,hours:stats.low*HRS_HI,label:"Low Priority",color:C.green},
-  ].filter(d=>d.reports>0), [stats]);
+  const byQuarter = useMemo(()=>[
+    {quarter:"2026-Q1",reports:stats.high,color:C.red},
+    {quarter:"2026-Q2",reports:stats.med,color:C.amber},
+    {quarter:"2026-Q3",reports:stats.low,color:C.green},
+  ].filter(d=>d.reports>0),[stats]);
 
-  const hasFilter = selArea || selPriority;
-  const clearAll = useCallback(() => { setSelArea(null); setSelPriority(null); }, []);
-  const clickArea = useCallback(data => { if(data?.activePayload?.[0]){const n=data.activePayload[0].payload.name;setSelArea(prev=>prev===n?null:n)} }, []);
-  const clickPriority = useCallback(data => { if(data?.activePayload?.[0]){const n=data.activePayload[0].payload.name;setSelPriority(prev=>prev===n?null:n)} }, []);
-  const clickPie = useCallback((_,idx) => { const n=allByPriority[idx]?.name;if(n)setSelPriority(prev=>prev===n?null:n) }, [allByPriority]);
+  const hasFilter = selArea||selPriority;
+  const clearAll = useCallback(()=>{setSelArea(null);setSelPriority(null);},[]);
 
-  const af = n => !selArea ? C.amber : n===selArea ? C.amber : `${C.amber}22`;
-  const as = n => selArea===n ? "#fff" : "none";
-  const aw = n => selArea===n ? 2.5 : 0;
-  const pf = e => !selPriority ? e.fill : e.name===selPriority ? e.fill : `${e.fill}22`;
-  const ps = n => selPriority===n ? "#fff" : "none";
-  const pw = n => selPriority===n ? 2.5 : 0;
+  const clickArea = useCallback(data=>{
+    if(data&&data.activePayload&&data.activePayload[0]){
+      const n=data.activePayload[0].payload.name;
+      setSelArea(prev=>prev===n?null:n);
+    }
+  },[]);
 
-  const tabs = ["Executive Summary","Conversion Scope","Platform Analysis"];
+  const clickPriority = useCallback(data=>{
+    if(data&&data.activePayload&&data.activePayload[0]){
+      const n=data.activePayload[0].payload.name;
+      setSelPriority(prev=>prev===n?null:n);
+    }
+  },[]);
+
+  const clickPie = useCallback((_,idx)=>{
+    const n=allByPriority[idx]&&allByPriority[idx].name;
+    if(n)setSelPriority(prev=>prev===n?null:n);
+  },[allByPriority]);
+
+  const af = n=>!selArea?C.amber:n===selArea?C.amber:`${C.amber}22`;
+  const pf = e=>!selPriority?e.fill:e.name===selPriority?e.fill:`${e.fill}22`;
+
+  const tabs=["Executive Summary","Conversion Scope","Platform Analysis"];
 
   return (
-    <div style={{minHeight:"100vh",background:C.bg,color:C.text,fontFamily:"'Space Grotesk',sans-serif",padding:"0 0 40px"}}>
-      {/* HEADER */}
-      <div style={{background:`linear-gradient(135deg,#0d1321 0%,#0a1628 100%)`,borderBottom:`1px solid ${C.border}`,padding:"20px 32px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
+    <div style={{minHeight:"100vh",background:C.bg,color:C.text,fontFamily:"'Space Grotesk',sans-serif",paddingBottom:40}}>
+
+      <div style={{background:"#0a1628",borderBottom:`1px solid ${C.border}`,padding:"20px 32px",display:"flex",alignItems:"center",justifyContent:"space-between",flexWrap:"wrap",gap:12}}>
         <div>
-          <div style={{fontSize:10,color:C.dim,letterSpacing:2,textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace",marginBottom:4}}>SAP BusinessObjects BI Platform · 4.3 SP3</div>
-          <div style={{fontSize:20,fontWeight:700,color:C.text,letterSpacing:.3}}>Crystal Reports for Enterprise → CR 2020 Conversion</div>
-          <div style={{fontSize:12,color:C.muted,marginTop:2}}>Scope Assessment · BI 2025/2027 Compatibility</div>
+          <div style={{fontSize:10,color:C.dim,letterSpacing:2,textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace",marginBottom:4}}>SAP BusinessObjects BI Platform 4.3 SP3</div>
+          <div style={{fontSize:20,fontWeight:700,color:C.text}}>Crystal Reports for Enterprise → CR 2020 Conversion</div>
+          <div style={{fontSize:12,color:C.muted,marginTop:2}}>Scope Assessment · BI 2025/2027 Compatibility · Maven BI Group</div>
         </div>
-        <div style={{display:"flex",gap:12,alignItems:"center",flexWrap:"wrap"}}>
+        <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
           <div style={{textAlign:"center",background:`${C.red}15`,border:`1px solid ${C.red}40`,borderRadius:8,padding:"8px 16px"}}>
-            <div style={{fontSize:9,color:C.red,letterSpacing:1.5,textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Resource Required</div>
+            <div style={{fontSize:9,color:C.red,letterSpacing:1.5,textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Timeline</div>
             <div style={{fontSize:16,fontWeight:700,color:C.red,fontFamily:"'JetBrains Mono',monospace"}}>6–12 Months</div>
           </div>
           <div style={{textAlign:"center",background:`${C.amber}15`,border:`1px solid ${C.amber}40`,borderRadius:8,padding:"8px 16px"}}>
-            <div style={{fontSize:9,color:C.amber,letterSpacing:1.5,textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>Dedicated FTE</div>
+            <div style={{fontSize:9,color:C.amber,letterSpacing:1.5,textTransform:"uppercase",fontFamily:"'JetBrains Mono',monospace"}}>FTE Required</div>
             <div style={{fontSize:16,fontWeight:700,color:C.amber,fontFamily:"'JetBrains Mono',monospace"}}>1.97–3.94</div>
           </div>
         </div>
       </div>
 
-      {/* TAB BAR */}
       <div style={{padding:"12px 32px",borderBottom:`1px solid ${C.border}`,display:"flex",gap:8}}>
         {tabs.map((t,i)=>(
-          <button key={i} onClick={()=>{setTab(i);clearAll()}}
-            style={{background:tab===i?C.amber:"transparent",color:tab===i?C.bg:C.muted,border:`1px solid ${tab===i?C.amber:C.border}`,borderRadius:5,padding:"6px 16px",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"'Space Grotesk',sans-serif",transition:"all .15s"}}>{t}</button>
+          <button key={i} onClick={()=>{setTab(i);clearAll();}}
+            style={{background:tab===i?C.amber:"transparent",color:tab===i?"#060b14":C.muted,border:`1px solid ${tab===i?C.amber:C.border}`,borderRadius:5,padding:"6px 16px",fontSize:12,fontWeight:600,cursor:"pointer",transition:"all .15s"}}>{t}</button>
         ))}
       </div>
 
-      {/* FILTER BAR */}
       {tab<2&&(
         <div style={{padding:"8px 32px",borderBottom:`1px solid ${C.border}`,display:"flex",alignItems:"center",gap:8,flexWrap:"wrap",minHeight:40}}>
           <span style={{fontSize:11,color:C.dim,fontFamily:"'JetBrains Mono',monospace"}}>Filters:</span>
-          {!hasFilter&&<span style={{fontSize:11,color:`${C.dim}80`,fontStyle:"italic"}}>None — click any chart element to filter</span>}
+          {!hasFilter&&<span style={{fontSize:11,color:`${C.dim}80`,fontStyle:"italic"}}>None — click any chart bar to filter</span>}
           {selArea&&<Pill label="Area" value={selArea} onClear={()=>setSelArea(null)}/>}
           {selPriority&&<Pill label="Priority" value={selPriority} onClear={()=>setSelPriority(null)}/>}
-          {hasFilter&&<span onClick={clearAll} style={{cursor:"pointer",fontSize:11,padding:"3px 10px",borderRadius:20,background:`${C.red}20`,color:C.red,border:`1px solid ${C.red}40`,fontFamily:"'JetBrains Mono',monospace",transition:"all .15s"}}
-            onMouseEnter={e=>{e.target.style.background=C.red;e.target.style.color="#fff"}}
-            onMouseLeave={e=>{e.target.style.background=`${C.red}20`;e.target.style.color=C.red}}>Clear All ×</span>}
+          {hasFilter&&<span onClick={clearAll} style={{cursor:"pointer",fontSize:11,padding:"3px 10px",borderRadius:20,background:`${C.red}20`,color:C.red,border:`1px solid ${C.red}40`,fontFamily:"'JetBrains Mono',monospace"}}>Clear All x</span>}
         </div>
       )}
 
       <div style={{padding:"20px 32px",display:"flex",flexDirection:"column",gap:20}}>
 
-        {/* TAB 0 */}
         {tab===0&&(
-          <>
-            <div style={{background:`${C.red}10`,border:`1px solid ${C.red}40`,borderRadius:10,padding:"14px 18px",display:"flex",gap:12,alignItems:"flex-start"}}>
-              <span style={{fontSize:20}}>⚠</span>
+          <div style={{display:"flex",flexDirection:"column",gap:16}}>
+            <div style={{background:`${C.red}10`,border:`1px solid ${C.red}40`,borderRadius:10,padding:"14px 18px",display:"flex",gap:12}}>
+              <span style={{fontSize:20}}>⚠️</span>
               <div>
                 <div style={{fontWeight:700,color:C.red,fontSize:14,marginBottom:4}}>CRE is incompatible with SAP BI 2025/2027</div>
-                <div style={{fontSize:13,color:C.muted,lineHeight:1.6}}>All {rawCR.length} Crystal Report objects must be converted to CR 2020. At {HRS_LO}–{HRS_HI} hours per report, this is {rawCR.length*HRS_LO}–{rawCR.length*HRS_HI} total hours — justifying a dedicated FTE for 6–12 months including QA.</div>
+                <div style={{fontSize:13,color:C.muted,lineHeight:1.6}}>All {rawCR.length} Crystal Report objects must be converted to CR 2020. At {HRS_LO}–{HRS_HI} hours per report, this totals {rawCR.length*HRS_LO}–{rawCR.length*HRS_HI} hours — justifying a dedicated FTE for 6–12 months including QA.</div>
               </div>
             </div>
 
             <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
               <KPI label="In-Scope CRE Reports" value={String(stats.count)} sub={`of ${TOTAL} total InfoObjects`}/>
-              <KPI label="Est. Conversion Hours" value={`${stats.hrsLo}–${stats.hrsHi}`} sub="at 5–10 hrs/report" hot/>
+              <KPI label="Est. Conversion Hours" value={`${stats.hrsLo}–${stats.hrsHi}`} sub="at 5–10 hrs/report" hot={true}/>
               <KPI label="FTE Months (Base)" value={`${stats.fteLo}–${stats.fteHi}`} sub="160 hrs/month basis"/>
-              <KPI label="FTE Months (w/ QA 2×)" value={`${(stats.fteLo*2).toFixed(1)}–${(stats.fteHi*2).toFixed(1)}`} sub="recommended budget" hot/>
+              <KPI label="FTE Months (w/ QA 2x)" value={`${(stats.fteLo*2).toFixed(1)}–${(stats.fteHi*2).toFixed(1)}`} sub="recommended budget" hot={true}/>
             </div>
 
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-              <Card title="Priority Distribution" sub="High / Medium / Low split" clickHint>
+              <Card title="Priority Distribution" sub="Click bar to filter" clickHint={true}>
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={allByPriority} onClick={clickPriority} style={{cursor:"pointer"}}>
                     <CartesianGrid strokeDasharray="3 3" stroke={C.grid}/>
@@ -211,13 +215,13 @@ function Dashboard() {
                     <YAxis tick={{fill:C.muted,fontSize:10}} axisLine={false} tickLine={false}/>
                     <Tooltip content={<Tip/>}/>
                     <Bar dataKey="count" radius={[4,4,0,0]}>
-                      {allByPriority.map((e,i)=><Cell key={i} fill={pf(e)} stroke={ps(e.name)} strokeWidth={pw(e.name)}/>)}
+                      {allByPriority.map((e,i)=><Cell key={i} fill={pf(e)}/>)}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </Card>
 
-              <Card title="Recommended Conversion Phases" sub="Suggested quarterly rollout">
+              <Card title="Conversion Phases" sub="By priority quarter">
                 <ResponsiveContainer width="100%" height={200}>
                   <BarChart data={byQuarter}>
                     <CartesianGrid strokeDasharray="3 3" stroke={C.grid}/>
@@ -232,7 +236,7 @@ function Dashboard() {
               </Card>
             </div>
 
-            <Card title="Reports by Functional Area" sub="Full CRE inventory — click bar to filter" clickHint>
+            <Card title="Reports by Functional Area" sub="Click bar to filter" clickHint={true}>
               <ResponsiveContainer width="100%" height={220}>
                 <BarChart data={allByArea} onClick={clickArea} style={{cursor:"pointer"}}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.grid}/>
@@ -240,7 +244,7 @@ function Dashboard() {
                   <YAxis tick={{fill:C.muted,fontSize:10}} axisLine={false} tickLine={false}/>
                   <Tooltip content={<Tip/>}/>
                   <Bar dataKey="count" radius={[4,4,0,0]}>
-                    {allByArea.map((e,i)=><Cell key={i} fill={af(e.name)} stroke={as(e.name)} strokeWidth={aw(e.name)}/>)}
+                    {allByArea.map((e,i)=><Cell key={i} fill={af(e.name)}/>)}
                   </Bar>
                 </BarChart>
               </ResponsiveContainer>
@@ -255,7 +259,7 @@ function Dashboard() {
                     {l:"Total Conversion Hours",v:`${stats.hrsLo}–${stats.hrsHi} hrs`,c:C.red},
                     {l:"Working Hours/Month",v:"160 hrs",c:C.muted},
                     {l:"Base FTE Months",v:`${stats.fteLo}–${stats.fteHi}`,c:C.amber},
-                    {l:"+ QA & Testing Buffer (2×)",v:`${(stats.fteLo*2).toFixed(1)}–${(stats.fteHi*2).toFixed(1)}`,c:C.red},
+                    {l:"+ QA Buffer (2x)",v:`${(stats.fteLo*2).toFixed(1)}–${(stats.fteHi*2).toFixed(1)}`,c:C.red},
                   ].map((r,i)=>(
                     <tr key={i} style={{borderBottom:`1px solid ${C.border}`}}>
                       <td style={{padding:"8px 4px",color:C.muted}}>{r.l}</td>
@@ -266,17 +270,16 @@ function Dashboard() {
               </table>
               <div style={{marginTop:12,background:`${C.amber}10`,border:`1px solid ${C.amber}30`,borderRadius:6,padding:"10px 14px",display:"flex",justifyContent:"space-between",alignItems:"center"}}>
                 <span style={{fontSize:12,color:C.muted}}>Recommended Engagement</span>
-                <span style={{fontSize:14,fontWeight:700,color:C.amber,fontFamily:"'JetBrains Mono',monospace"}}>1 FTE × 6–12 Months</span>
+                <span style={{fontSize:14,fontWeight:700,color:C.amber,fontFamily:"'JetBrains Mono',monospace"}}>1 FTE x 6–12 Months</span>
               </div>
             </Card>
-          </>
+          </div>
         )}
 
-        {/* TAB 1 */}
         {tab===1&&(
-          <>
+          <div style={{display:"flex",flexDirection:"column",gap:16}}>
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
-              <Card title="Reports by Functional Area" sub="Click to filter table below" clickHint>
+              <Card title="Reports by Functional Area" sub="Click to filter table below" clickHint={true}>
                 <ResponsiveContainer width="100%" height={240}>
                   <BarChart data={allByArea} onClick={clickArea} style={{cursor:"pointer"}}>
                     <CartesianGrid strokeDasharray="3 3" stroke={C.grid}/>
@@ -284,23 +287,22 @@ function Dashboard() {
                     <YAxis tick={{fill:C.muted,fontSize:10}} axisLine={false} tickLine={false}/>
                     <Tooltip content={<Tip/>}/>
                     <Bar dataKey="count" radius={[4,4,0,0]}>
-                      {allByArea.map((e,i)=><Cell key={i} fill={af(e.name)} stroke={as(e.name)} strokeWidth={aw(e.name)}/>)}
+                      {allByArea.map((e,i)=><Cell key={i} fill={af(e.name)}/>)}
                     </Bar>
                   </BarChart>
                 </ResponsiveContainer>
               </Card>
 
-              <Card title="Priority Mix" sub="Click to filter" clickHint>
+              <Card title="Priority Mix" sub="Click to filter" clickHint={true}>
                 <ResponsiveContainer width="100%" height={240}>
                   <PieChart onClick={clickPie} style={{cursor:"pointer"}}>
                     <Pie data={allByPriority} dataKey="count" nameKey="name" cx="50%" cy="50%" innerRadius={55} outerRadius={85}
-                      label={({cx,cy,midAngle,innerRadius:ir,outerRadius:or,percent,name,value})=>{
+                      label={({cx,cy,midAngle,outerRadius:or,percent,name,value})=>{
                         if(percent<0.04)return null;
-                        const R=Math.PI/180; const r=or+24;
-                        const x=cx+r*Math.cos(-midAngle*R); const y=cy+r*Math.sin(-midAngle*R);
-                        return <text x={x} y={y} fill={C.muted} textAnchor={x>cx?"start":"end"} fontSize={11} fontFamily="'JetBrains Mono',monospace">{name} ({value})</text>
+                        const R=Math.PI/180,r=or+24,x=cx+r*Math.cos(-midAngle*R),y=cy+r*Math.sin(-midAngle*R);
+                        return <text x={x} y={y} fill={C.muted} textAnchor={x>cx?"start":"end"} fontSize={11} fontFamily="'JetBrains Mono',monospace">{name} ({value})</text>;
                       }} labelLine={{stroke:C.dim,strokeWidth:1}}>
-                      {allByPriority.map((e,i)=><Cell key={i} fill={pf(e)} stroke={ps(e.name)} strokeWidth={pw(e.name)}/>)}
+                      {allByPriority.map((e,i)=><Cell key={i} fill={pf(e)}/>)}
                     </Pie>
                     <Tooltip content={<Tip/>}/>
                   </PieChart>
@@ -311,15 +313,12 @@ function Dashboard() {
             <div style={{display:"flex",gap:12,flexWrap:"wrap"}}>
               {[{q:"2026-Q1",p:"High",color:C.red},{q:"2026-Q2",p:"Medium",color:C.amber},{q:"2026-Q3",p:"Low",color:C.green}].map((q,i)=>{
                 const reps=rawCR.filter(r=>r.priority===q.p).length;
-                const isSel=selPriority===q.p;
                 return(
                   <div key={i} onClick={()=>setSelPriority(prev=>prev===q.p?null:q.p)}
-                    onMouseEnter={e=>{e.currentTarget.style.borderColor=q.color;e.currentTarget.style.transform="translateY(-2px)"}}
-                    onMouseLeave={e=>{e.currentTarget.style.borderColor=isSel?q.color:`${q.color}25`;e.currentTarget.style.transform=""}}
-                    style={{flex:1,minWidth:160,background:C.card,border:`2px solid ${isSel?q.color:`${q.color}25`}`,borderRadius:8,padding:"12px 16px",cursor:"pointer",transition:"all .15s"}}>
+                    style={{flex:1,minWidth:160,background:C.card,border:`2px solid ${selPriority===q.p?q.color:`${q.color}25`}`,borderRadius:8,padding:"12px 16px",cursor:"pointer",transition:"all .15s"}}>
                     <div style={{fontSize:10,color:C.dim,fontFamily:"'JetBrains Mono',monospace",marginBottom:4}}>{q.q}</div>
                     <div style={{fontSize:24,fontWeight:700,color:q.color,fontFamily:"'JetBrains Mono',monospace"}}>{reps}</div>
-                    <div style={{fontSize:11,color:C.muted}}>reports · {reps*HRS_HI} hrs</div>
+                    <div style={{fontSize:11,color:C.muted}}>reports · {reps*HRS_HI} hrs max</div>
                     <div style={{fontSize:11,color:q.color,marginTop:4,fontWeight:600}}>{q.p} Priority</div>
                   </div>
                 );
@@ -338,7 +337,7 @@ function Dashboard() {
                   </thead>
                   <tbody>
                     {filtered.map(r=>(
-                      <tr key={r.id} style={{borderBottom:`1px solid ${C.border}`,transition:"background .1s"}}
+                      <tr key={r.id} style={{borderBottom:`1px solid ${C.border}`}}
                         onMouseEnter={e=>e.currentTarget.style.background=`${C.amber}08`}
                         onMouseLeave={e=>e.currentTarget.style.background="transparent"}>
                         <td style={{padding:"7px 10px",color:C.amber,fontWeight:600}}>{r.name}</td>
@@ -351,13 +350,12 @@ function Dashboard() {
                 </table>
               </div>
             </Card>
-          </>
+          </div>
         )}
 
-        {/* TAB 2 */}
         {tab===2&&(
-          <>
-            <Card title="CRE Archive Activity Timeline" sub="Quarterly report creation — 2015 through 2026-Q1">
+          <div style={{display:"flex",flexDirection:"column",gap:16}}>
+            <Card title="CRE Archive Activity Timeline" sub="Quarterly report creation 2015–2026">
               <ResponsiveContainer width="100%" height={260}>
                 <LineChart data={archiveTimeline}>
                   <CartesianGrid strokeDasharray="3 3" stroke={C.grid}/>
@@ -371,22 +369,22 @@ function Dashboard() {
 
             <div style={{display:"grid",gridTemplateColumns:"1fr 1fr",gap:16}}>
               <Card title="SAP BI Platform Compatibility">
+                <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",gap:4,borderBottom:`1px solid ${C.borderHi}`,paddingBottom:6,marginBottom:4}}>
+                  {["Tool","BI 4.3","BI 2025","BI 2027"].map(h=><span key={h} style={{fontSize:9,color:C.dim,textTransform:"uppercase",letterSpacing:.5,textAlign:"center",fontFamily:"'JetBrains Mono',monospace"}}>{h}</span>)}
+                </div>
                 {[
-                  {tool:"Crystal Reports for Enterprise (CRE)",bi4:"✓ Supported",bi2025:"✗ Incompatible",bi2027:"✗ Incompatible"},
-                  {tool:"Crystal Reports 2020",bi4:"✓ Supported",bi2025:"✓ Supported",bi2027:"✓ Supported"},
-                  {tool:"Web Intelligence (WebI)",bi4:"✓ Supported",bi2025:"✓ Supported",bi2027:"✓ Supported"},
-                  {tool:"SAC Stories",bi4:"—",bi2025:"✓ Supported",bi2027:"✓ Supported"},
+                  {tool:"CRE",bi4:"✓",bi2025:"✗",bi2027:"✗"},
+                  {tool:"CR 2020",bi4:"✓",bi2025:"✓",bi2027:"✓"},
+                  {tool:"WebI",bi4:"✓",bi2025:"✓",bi2027:"✓"},
+                  {tool:"SAC Stories",bi4:"—",bi2025:"✓",bi2027:"✓"},
                 ].map((r,i)=>(
-                  <div key={i} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",gap:4,borderBottom:`1px solid ${C.border}`,padding:"8px 4px",fontSize:11,fontFamily:"'JetBrains Mono',monospace"}}>
-                    <span style={{color:C.text,fontSize:10}}>{r.tool}</span>
+                  <div key={i} style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",gap:4,borderBottom:`1px solid ${C.border}`,padding:"8px 4px",fontSize:12,fontFamily:"'JetBrains Mono',monospace"}}>
+                    <span style={{color:C.text}}>{r.tool}</span>
                     <span style={{color:C.green,textAlign:"center"}}>{r.bi4}</span>
-                    <span style={{color:r.bi2025.includes("✗")?C.red:C.green,textAlign:"center"}}>{r.bi2025}</span>
-                    <span style={{color:r.bi2027.includes("✗")?C.red:C.green,textAlign:"center"}}>{r.bi2027}</span>
+                    <span style={{color:r.bi2025==="✗"?C.red:r.bi2025==="—"?C.dim:C.green,textAlign:"center"}}>{r.bi2025}</span>
+                    <span style={{color:r.bi2027==="✗"?C.red:r.bi2027==="—"?C.dim:C.green,textAlign:"center"}}>{r.bi2027}</span>
                   </div>
                 ))}
-                <div style={{display:"grid",gridTemplateColumns:"2fr 1fr 1fr 1fr",gap:4,marginTop:4}}>
-                  {["Tool","BI 4.3","BI 2025","BI 2027"].map(h=><span key={h} style={{fontSize:9,color:C.dim,textTransform:"uppercase",letterSpacing:.5,textAlign:"center"}}>{h}</span>)}
-                </div>
               </Card>
 
               <Card title="Conversion Risk Summary">
@@ -404,12 +402,11 @@ function Dashboard() {
                 ))}
               </Card>
             </div>
-          </>
+          </div>
         )}
 
       </div>
 
-      {/* FOOTER */}
       <div style={{padding:"12px 32px",borderTop:`1px solid ${C.border}`,fontSize:10,color:C.dim,fontFamily:"'JetBrains Mono',monospace",display:"flex",justifyContent:"space-between",flexWrap:"wrap",gap:8}}>
         <span>Source: SAP BI Platform Query Builder · {TOTAL} InfoObjects · Maven BI Group</span>
         <span>{new Date().toLocaleDateString()}</span>
