@@ -8,13 +8,7 @@
 <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
-:root{
-  --bg:#060b14;--card:#0d1321;--border:#1a2540;--grid:#1a2540;
-  --amber:#f59e0b;--amber-dim:#78350f;--red:#ef4444;--red-dim:#7f1d1d;
-  --green:#10b981;--blue:#3b82f6;--purple:#a78bfa;--cyan:#06b6d4;--pink:#ec4899;--orange:#f97316;
-  --text:#f1f5f9;--muted:#94a3b8;--dim:#475569;
-  --jm:'JetBrains Mono',monospace;--sg:'Space Grotesk',-apple-system,sans-serif;
-}
+:root{--bg:#060b14;--card:#0d1321;--border:#1a2540;--grid:#1a2540;--amber:#f59e0b;--amber-dim:#78350f;--red:#ef4444;--red-dim:#7f1d1d;--green:#10b981;--blue:#3b82f6;--purple:#a78bfa;--cyan:#06b6d4;--pink:#ec4899;--orange:#f97316;--text:#f1f5f9;--muted:#94a3b8;--dim:#475569;--jm:'JetBrains Mono',monospace;--sg:'Space Grotesk',-apple-system,sans-serif}
 *{margin:0;padding:0;box-sizing:border-box}
 body{background:var(--bg);color:var(--text);font-family:var(--sg);min-height:100vh}
 .header{background:linear-gradient(135deg,var(--card) 0%,#0f172a 50%,rgba(120,53,15,.12) 100%);border-bottom:1px solid var(--border);padding:24px 28px 16px}
@@ -79,7 +73,6 @@ body{background:var(--bg);color:var(--text);font-family:var(--sg);min-height:100
 .badge-medium{color:var(--amber);background:rgba(245,158,11,.09)}
 .badge-low{color:var(--green);background:rgba(16,185,129,.09)}
 .footer{text-align:center;padding:16px 28px;border-top:1px solid var(--border);margin-top:20px;font:400 10px/1 var(--jm);color:var(--dim)}
-.chart-wrap{position:relative}
 canvas{max-width:100%}
 .hidden{display:none}
 </style>
@@ -114,62 +107,32 @@ canvas{max-width:100%}
 </div>
 
 <div class="content">
-  <!-- TAB 0 -->
   <div id="tab0">
     <div class="grid g5 mb20" id="kpiRow0"></div>
     <div class="warn mb20">
       <div class="warn-icon">⚠</div>
-      <div>
-        <div class="warn-title">CRE is incompatible with SAP BI 2025/2027</div>
-        <div class="warn-text">All 63 Crystal Report objects must be converted to CR 2020. At 5–10 hours per report, this is 315–630 total hours — justifying a dedicated FTE for 6–12 months including QA.</div>
-      </div>
+      <div><div class="warn-title">CRE is incompatible with SAP BI 2025/2027</div><div class="warn-text">All 63 Crystal Report objects must be converted to CR 2020. At 5–10 hours per report, this is 315–630 total hours — justifying a dedicated FTE for 6–12 months including QA.</div></div>
     </div>
     <div class="grid g2 mb14">
-      <div class="card">
-        <div class="card-head"><div><div class="card-title">CR Reports by Priority</div><div class="card-sub">Click to highlight — KPIs update</div></div><div class="click-hint">Click to highlight & filter</div></div>
-        <div class="chart-wrap"><canvas id="chart_prio" height="200"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div><div class="card-title">Conversion Workload by Planned Quarter</div><div class="card-sub">Reflects active filters</div></div></div>
-        <div class="chart-wrap"><canvas id="chart_quarter" height="200"></canvas></div>
-      </div>
+      <div class="card"><div class="card-head"><div><div class="card-title">CR Reports by Priority</div><div class="card-sub">Click to highlight — KPIs update</div></div><div class="click-hint">Click to highlight & filter</div></div><canvas id="c_prio"></canvas></div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Conversion Workload by Planned Quarter</div><div class="card-sub">Reflects active filters</div></div></div><canvas id="c_quarter"></canvas></div>
     </div>
     <div class="grid g2">
-      <div class="card">
-        <div class="card-head"><div><div class="card-title">Conversion Hours by Functional Area</div><div class="card-sub">Click to highlight — KPIs update</div></div><div class="click-hint">Click to highlight & filter</div></div>
-        <div class="chart-wrap"><canvas id="chart_area" height="260"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div><div class="card-title">Effort Justification</div><div class="card-sub">Resource calculation breakdown</div></div></div>
-        <div id="effortTable"></div>
-      </div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Conversion Hours by Functional Area</div><div class="card-sub">Click to highlight — KPIs update</div></div><div class="click-hint">Click to highlight & filter</div></div><canvas id="c_area0"></canvas></div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Effort Justification</div><div class="card-sub">Resource calculation breakdown</div></div></div><div id="effortTable"></div></div>
     </div>
   </div>
 
-  <!-- TAB 1 -->
   <div id="tab1" class="hidden">
     <div class="grid g4 mb20" id="kpiRow1"></div>
     <div class="grid g12-8 mb14">
-      <div class="card">
-        <div class="card-head"><div><div class="card-title">CR Reports by Functional Area</div><div class="card-sub">Click bars to highlight & cross-filter</div></div><div class="click-hint">Click to highlight & filter</div></div>
-        <div class="chart-wrap"><canvas id="chart_area2" height="300"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div><div class="card-title">Priority Distribution</div><div class="card-sub">Click slices to highlight & filter</div></div></div>
-        <div class="chart-wrap"><canvas id="chart_pie" height="300"></canvas></div>
-      </div>
+      <div class="card"><div class="card-head"><div><div class="card-title">CR Reports by Functional Area</div><div class="card-sub">Click bars to highlight & cross-filter</div></div><div class="click-hint">Click to highlight & filter</div></div><canvas id="c_area1"></canvas></div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Priority Distribution</div><div class="card-sub">Click slices to highlight & filter</div></div></div><canvas id="c_pie"></canvas></div>
     </div>
-    <div class="card mb14">
-      <div class="card-head"><div><div class="card-title">Conversion Timeline & Phasing</div><div class="card-sub">Click a phase card to filter by priority</div></div></div>
-      <div class="grid g3" id="phaseCards"></div>
-    </div>
-    <div class="card mt14">
-      <div class="card-head"><div><div class="card-title" id="detailTitle">CR Report Detail — 63 of 63 records</div><div class="card-sub" id="detailSub">All CR objects</div></div></div>
-      <div class="detail-wrap"><table class="detail-table"><thead><tr><th>Report</th><th>Functional Area</th><th>Priority</th><th>Est. Hours</th></tr></thead><tbody id="detailBody"></tbody></table></div>
-    </div>
+    <div class="card mb14"><div class="card-head"><div><div class="card-title">Conversion Timeline & Phasing</div><div class="card-sub">Click a phase card to filter by priority</div></div></div><div class="grid g3" id="phaseCards"></div></div>
+    <div class="card mt14"><div class="card-head"><div><div class="card-title" id="detailTitle">CR Report Detail</div><div class="card-sub" id="detailSub">All CR objects</div></div></div><div class="detail-wrap"><table class="detail-table"><thead><tr><th>Report</th><th>Functional Area</th><th>Priority</th><th>Est. Hours</th></tr></thead><tbody id="detailBody"></tbody></table></div></div>
   </div>
 
-  <!-- TAB 2 -->
   <div id="tab2" class="hidden">
     <div class="grid g5 mb20">
       <div class="kpi"><div class="kpi-label">Total Folders</div><div class="kpi-val">678</div></div>
@@ -179,57 +142,27 @@ canvas{max-width:100%}
       <div class="kpi"><div class="kpi-label">Max Depth</div><div class="kpi-val">6</div><div class="kpi-sub">Nesting levels</div></div>
     </div>
     <div class="grid g2 mb14">
-      <div class="card">
-        <div class="card-head"><div><div class="card-title">Folder Type Distribution</div></div></div>
-        <div class="chart-wrap"><canvas id="chart_types" height="280"></canvas></div>
-      </div>
-      <div class="card">
-        <div class="card-head"><div><div class="card-title">Hierarchy Depth Distribution</div></div></div>
-        <div class="chart-wrap"><canvas id="chart_depth" height="280"></canvas></div>
-      </div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Folder Type Distribution</div></div></div><canvas id="c_types"></canvas></div>
+      <div class="card"><div class="card-head"><div><div class="card-title">Hierarchy Depth Distribution</div></div></div><canvas id="c_depth"></canvas></div>
     </div>
-    <div class="card">
-      <div class="card-head"><div><div class="card-title">BI Platform Activity Timeline</div><div class="card-sub">Date-based archive/LCM promotion folders — sustained usage 2015–2026</div></div></div>
-      <div class="chart-wrap"><canvas id="chart_timeline" height="220"></canvas></div>
-    </div>
+    <div class="card"><div class="card-head"><div><div class="card-title">BI Platform Activity Timeline</div><div class="card-sub">Date-based archive/LCM promotion folders — sustained usage 2015–2026</div></div></div><canvas id="c_timeline"></canvas></div>
   </div>
 </div>
 
 <div class="footer">Source: SAP BI Platform Query Builder · 678 InfoObjects · <span id="footerDate"></span> · Maven BI Group</div>
 
 <script>
-// ─── DATA ───
-const HL=5,HH=10;
-const RAW=[
+var HL=5,HH=10;
+var RAW=[
 {id:1,n:"CR6135",a:"Finance",p:"High"},{id:2,n:"CR5867",a:"Finance",p:"High"},{id:3,n:"CR6902",a:"Finance",p:"High"},{id:4,n:"CR6905",a:"Finance",p:"High"},{id:5,n:"CR8123",a:"Finance",p:"High"},{id:6,n:"CR8124",a:"Finance",p:"High"},{id:7,n:"CR8125",a:"Finance",p:"High"},{id:8,n:"CR8126",a:"Finance",p:"High"},{id:9,n:"CR8127",a:"Finance",p:"High"},{id:10,n:"CR6604",a:"Finance",p:"High"},{id:11,n:"CR8205",a:"Finance",p:"High"},{id:12,n:"CR7877",a:"Finance",p:"High"},{id:13,n:"CR5694",a:"Finance",p:"High"},{id:14,n:"CR6354",a:"Finance",p:"High"},{id:15,n:"CR7402",a:"Finance",p:"High"},{id:16,n:"CR7535",a:"Finance",p:"High"},{id:17,n:"CR7557",a:"Finance",p:"High"},{id:18,n:"CR7628",a:"Finance",p:"High"},{id:19,n:"CR7682",a:"Finance",p:"High"},{id:20,n:"CR8004",a:"Finance",p:"High"},{id:21,n:"CR4687",a:"GM Reports",p:"High"},{id:22,n:"CR5633",a:"GM Reports",p:"High"},{id:23,n:"CR7083",a:"GM Reports",p:"High"},{id:24,n:"CR6909",a:"GM Reports",p:"High"},{id:25,n:"CR4798",a:"Finance",p:"High"},{id:26,n:"CR4723",a:"Finance",p:"High"},{id:27,n:"CR4812",a:"Finance",p:"High"},{id:28,n:"CR5224",a:"Finance",p:"High"},{id:29,n:"CR7319",a:"Finance",p:"High"},{id:30,n:"CR7929",a:"Finance",p:"High"},{id:31,n:"CR8137",a:"Finance",p:"High"},{id:32,n:"CR8257",a:"Finance",p:"High"},{id:33,n:"CR8473",a:"Finance",p:"High"},{id:34,n:"CR8639",a:"Finance",p:"High"},{id:35,n:"CR8834",a:"Finance",p:"High"},{id:36,n:"CR8866",a:"Finance",p:"High"},{id:37,n:"CR8911",a:"Finance",p:"High"},{id:38,n:"CR9038",a:"Grants Mgmt",p:"High"},{id:39,n:"CR8457",a:"Grants Mgmt",p:"High"},{id:40,n:"CR9167",a:"Grants Mgmt",p:"High"},{id:41,n:"CR7291",a:"Human Resources",p:"High"},{id:42,n:"CR9023",a:"Human Resources",p:"High"},{id:43,n:"CR8640",a:"Human Resources",p:"High"},{id:44,n:"CR6992",a:"Human Resources",p:"High"},{id:45,n:"CR7187",a:"Dept-Specific",p:"Medium"},{id:46,n:"CR7824",a:"Dept-Specific",p:"Medium"},{id:47,n:"CR8013",a:"Dept-Specific",p:"Medium"},{id:48,n:"CR8024",a:"Dept-Specific",p:"Medium"},{id:49,n:"CR8025",a:"Dept-Specific",p:"Medium"},{id:50,n:"CR8026",a:"Dept-Specific",p:"Medium"},{id:51,n:"CR8027",a:"Dept-Specific",p:"Medium"},{id:52,n:"CR8230",a:"Dept-Specific",p:"Medium"},{id:53,n:"CR 7167",a:"Ops/Purchasing",p:"Medium"},{id:54,n:"CR 12201",a:"Dept-Specific",p:"Medium"},{id:55,n:"CR5719",a:"Dept-Specific",p:"Medium"},{id:56,n:"cr20983",a:"BI Admin",p:"Low"},{id:57,n:"CR7682b",a:"Ops/Purchasing",p:"Medium"},{id:58,n:"CR8192",a:"Dept-Specific",p:"Medium"},{id:59,n:"CR5867b",a:"Student Info",p:"High"},{id:60,n:"CR6469",a:"Student Info",p:"High"},{id:61,n:"CR5694b",a:"Ops/Purchasing",p:"Medium"},{id:62,n:"ZFI_BW_General",a:"Finance",p:"High"},{id:63,n:"CR8155",a:"BI Admin",p:"Low"}
 ];
-const TL=[{q:"2015-Q1",c:7},{q:"2015-Q2",c:10},{q:"2015-Q3",c:8},{q:"2015-Q4",c:10},{q:"2016-Q1",c:9},{q:"2016-Q2",c:6},{q:"2016-Q3",c:4},{q:"2016-Q4",c:6},{q:"2017-Q1",c:9},{q:"2017-Q2",c:2},{q:"2017-Q3",c:5},{q:"2017-Q4",c:8},{q:"2018-Q1",c:5},{q:"2018-Q2",c:2},{q:"2018-Q3",c:3},{q:"2018-Q4",c:8},{q:"2019-Q1",c:8},{q:"2019-Q2",c:3},{q:"2019-Q3",c:7},{q:"2019-Q4",c:12},{q:"2020-Q1",c:3},{q:"2020-Q2",c:6},{q:"2020-Q3",c:8},{q:"2020-Q4",c:8},{q:"2021-Q1",c:2},{q:"2021-Q2",c:3},{q:"2021-Q3",c:4},{q:"2021-Q4",c:4},{q:"2022-Q1",c:8},{q:"2022-Q2",c:10},{q:"2022-Q3",c:7},{q:"2022-Q4",c:10},{q:"2023-Q1",c:2},{q:"2023-Q2",c:6},{q:"2023-Q3",c:8},{q:"2023-Q4",c:3},{q:"2024-Q1",c:7},{q:"2024-Q2",c:5},{q:"2024-Q3",c:3},{q:"2024-Q4",c:5},{q:"2025-Q1",c:4},{q:"2025-Q2",c:7},{q:"2025-Q3",c:5},{q:"2025-Q4",c:3},{q:"2026-Q1",c:1}];
+var TL=[{q:"2015-Q1",c:7},{q:"2015-Q2",c:10},{q:"2015-Q3",c:8},{q:"2015-Q4",c:10},{q:"2016-Q1",c:9},{q:"2016-Q2",c:6},{q:"2016-Q3",c:4},{q:"2016-Q4",c:6},{q:"2017-Q1",c:9},{q:"2017-Q2",c:2},{q:"2017-Q3",c:5},{q:"2017-Q4",c:8},{q:"2018-Q1",c:5},{q:"2018-Q2",c:2},{q:"2018-Q3",c:3},{q:"2018-Q4",c:8},{q:"2019-Q1",c:8},{q:"2019-Q2",c:3},{q:"2019-Q3",c:7},{q:"2019-Q4",c:12},{q:"2020-Q1",c:3},{q:"2020-Q2",c:6},{q:"2020-Q3",c:8},{q:"2020-Q4",c:8},{q:"2021-Q1",c:2},{q:"2021-Q2",c:3},{q:"2021-Q3",c:4},{q:"2021-Q4",c:4},{q:"2022-Q1",c:8},{q:"2022-Q2",c:10},{q:"2022-Q3",c:7},{q:"2022-Q4",c:10},{q:"2023-Q1",c:2},{q:"2023-Q2",c:6},{q:"2023-Q3",c:8},{q:"2023-Q4",c:3},{q:"2024-Q1",c:7},{q:"2024-Q2",c:5},{q:"2024-Q3",c:3},{q:"2024-Q4",c:5},{q:"2025-Q1",c:4},{q:"2025-Q2",c:7},{q:"2025-Q3",c:5},{q:"2025-Q4",c:3},{q:"2026-Q1",c:1}];
 
-const PCOL={High:"#ef4444",Medium:"#f59e0b",Low:"#10b981"};
-const PCOL_DIM={High:"rgba(239,68,68,.15)",Medium:"rgba(245,158,11,.15)",Low:"rgba(16,185,129,.15)"};
+var PCOL={High:"#ef4444",Medium:"#f59e0b",Low:"#10b981"};
+var PCOL_DIM={High:"rgba(239,68,68,.15)",Medium:"rgba(245,158,11,.15)",Low:"rgba(16,185,129,.15)"};
+var selArea=null,selPriority=null,currentTab=0;
+var charts={};
 
-// ─── STATE ───
-let selArea=null, selPriority=null, currentTab=0;
-let charts={};
-
-// ─── HELPERS ───
-function getFiltered(){
-  let d=RAW;
-  if(selArea) d=d.filter(r=>r.a===selArea);
-  if(selPriority) d=d.filter(r=>r.p===selPriority);
-  return d;
-}
-function getStats(f){
-  const n=f.length;
-  return{n,hL:n*HL,hH:n*HH,fL:(n*HL/160).toFixed(1),fH:(n*HH/160).toFixed(1),
-    hi:f.filter(r=>r.p==="High").length,me:f.filter(r=>r.p==="Medium").length,lo:f.filter(r=>r.p==="Low").length};
-}
-function byArea(){
-  const m={};RAW.forEach(r=>{m[r.a]=(m[r.a]||0)+1});
-  return Object.entries(m).sort((a,b)=>b[1]-a[1]);
-}
-
-// ─── CHART DEFAULTS ───
 Chart.defaults.color='#94a3b8';
 Chart.defaults.borderColor='#1a2540';
 Chart.defaults.font.family="'Space Grotesk',-apple-system,sans-serif";
@@ -242,179 +175,161 @@ Chart.defaults.plugins.tooltip.titleFont={weight:'700',size:12};
 Chart.defaults.plugins.tooltip.bodyFont={size:11};
 Chart.defaults.plugins.tooltip.padding=10;
 Chart.defaults.plugins.tooltip.cornerRadius=6;
-Chart.defaults.scale.grid={color:'#1a2540'};
 
-// ─── RENDER ───
+function getFiltered(){var d=RAW;if(selArea)d=d.filter(function(r){return r.a===selArea});if(selPriority)d=d.filter(function(r){return r.p===selPriority});return d}
+function getStats(f){var n=f.length;return{n:n,hL:n*HL,hH:n*HH,fL:(n*HL/160).toFixed(1),fH:(n*HH/160).toFixed(1),hi:f.filter(function(r){return r.p==="High"}).length,me:f.filter(function(r){return r.p==="Medium"}).length,lo:f.filter(function(r){return r.p==="Low"}).length}}
+function byAreaArr(){var m={};RAW.forEach(function(r){m[r.a]=(m[r.a]||0)+1});return Object.keys(m).map(function(k){return[k,m[k]]}).sort(function(a,b){return b[1]-a[1]})}
+
+function destroyAll(){Object.keys(charts).forEach(function(k){if(charts[k]){charts[k].destroy();delete charts[k]}})}
+
 function render(){
-  const f=getFiltered(), s=getStats(f), hf=selArea||selPriority;
+  var f=getFiltered(),s=getStats(f),hf=selArea||selPriority;
 
   // Filter bar
-  document.getElementById('filterHint').classList.toggle('hidden',hf);
-  document.getElementById('clearBtn').classList.toggle('hidden',!hf);
-  document.getElementById('filterBar').classList.toggle('hidden',currentTab>=2);
-  let pills='';
-  if(selArea) pills+=`<span class="pill"><span class="pill-label">Area:</span><span class="pill-val">${selArea}</span><span class="pill-x" onclick="selArea=null;render()">×</span></span> `;
-  if(selPriority) pills+=`<span class="pill"><span class="pill-label">Priority:</span><span class="pill-val">${selPriority}</span><span class="pill-x" onclick="selPriority=null;render()">×</span></span>`;
+  document.getElementById('filterHint').className=hf?'filter-hint hidden':'filter-hint';
+  document.getElementById('clearBtn').className=hf?'clear-btn':'clear-btn hidden';
+  document.getElementById('filterBar').className=currentTab>=2?'filter-bar hidden':'filter-bar';
+  var pills='';
+  if(selArea)pills+='<span class="pill"><span class="pill-label">Area:</span><span class="pill-val">'+selArea+'</span><span class="pill-x" onclick="selArea=null;render()">×</span></span> ';
+  if(selPriority)pills+='<span class="pill"><span class="pill-label">Priority:</span><span class="pill-val">'+selPriority+'</span><span class="pill-x" onclick="selPriority=null;render()">×</span></span>';
   document.getElementById('filterPills').innerHTML=pills;
 
   // KPIs Tab 0
-  document.getElementById('kpiRow0').innerHTML=`
-    <div class="kpi"><div class="kpi-label">Total BI Folders</div><div class="kpi-val">678</div><div class="kpi-sub">Entire platform</div></div>
-    <div class="kpi hot"><div class="kpi-label">CR Objects</div><div class="kpi-val">${s.n}</div><div class="kpi-sub">${hf?'Filtered':'Requiring conversion'}</div></div>
-    <div class="kpi hot"><div class="kpi-label">Est. Hours</div><div class="kpi-val">${s.hL}–${s.hH}</div><div class="kpi-sub">${HL}–${HH} hrs per report</div></div>
-    <div class="kpi hot"><div class="kpi-label">FTE Months</div><div class="kpi-val">${s.fL}–${s.fH}</div><div class="kpi-sub">@ 160 hrs/month</div></div>
-    <div class="kpi"><div class="kpi-label">Active Folders</div><div class="kpi-val">660</div><div class="kpi-sub">97.3% active</div></div>`;
+  document.getElementById('kpiRow0').innerHTML='<div class="kpi"><div class="kpi-label">Total BI Folders</div><div class="kpi-val">678</div><div class="kpi-sub">Entire platform</div></div><div class="kpi hot"><div class="kpi-label">CR Objects</div><div class="kpi-val">'+s.n+'</div><div class="kpi-sub">'+(hf?'Filtered':'Requiring conversion')+'</div></div><div class="kpi hot"><div class="kpi-label">Est. Hours</div><div class="kpi-val">'+s.hL+'–'+s.hH+'</div><div class="kpi-sub">'+HL+'–'+HH+' hrs per report</div></div><div class="kpi hot"><div class="kpi-label">FTE Months</div><div class="kpi-val">'+s.fL+'–'+s.fH+'</div><div class="kpi-sub">@ 160 hrs/month</div></div><div class="kpi"><div class="kpi-label">Active Folders</div><div class="kpi-val">660</div><div class="kpi-sub">97.3% active</div></div>';
 
   // KPIs Tab 1
-  document.getElementById('kpiRow1').innerHTML=`
-    <div class="kpi hot"><div class="kpi-label">High Priority</div><div class="kpi-val">${s.hi}</div><div class="kpi-sub">${s.hi*HH} hrs</div></div>
-    <div class="kpi"><div class="kpi-label">Medium Priority</div><div class="kpi-val">${s.me}</div><div class="kpi-sub">${s.me*HH} hrs</div></div>
-    <div class="kpi"><div class="kpi-label">Low Priority</div><div class="kpi-val">${s.lo}</div><div class="kpi-sub">${s.lo*HH} hrs</div></div>
-    <div class="kpi hot"><div class="kpi-label">Total Selected</div><div class="kpi-val">${s.n}</div><div class="kpi-sub">${hf?'Filtered':'All CR objects'}</div></div>`;
+  document.getElementById('kpiRow1').innerHTML='<div class="kpi hot"><div class="kpi-label">High Priority</div><div class="kpi-val">'+s.hi+'</div><div class="kpi-sub">'+s.hi*HH+' hrs</div></div><div class="kpi"><div class="kpi-label">Medium Priority</div><div class="kpi-val">'+s.me+'</div><div class="kpi-sub">'+s.me*HH+' hrs</div></div><div class="kpi"><div class="kpi-label">Low Priority</div><div class="kpi-val">'+s.lo+'</div><div class="kpi-sub">'+s.lo*HH+' hrs</div></div><div class="kpi hot"><div class="kpi-label">Total Selected</div><div class="kpi-val">'+s.n+'</div><div class="kpi-sub">'+(hf?'Filtered':'All CR objects')+'</div></div>';
 
   // Effort table
-  const rows=[
-    {l:"Total CR Objects",v:s.n,c:"var(--amber)"},{l:"Avg Hours Per Report",v:`${HL}–${HH} hrs`,c:"var(--blue)"},
-    {l:"Total Conversion Hours",v:`${s.hL}–${s.hH} hrs`,c:"var(--red)"},{l:"Working Hours/Month",v:"160 hrs",c:"var(--muted)"},
-    {l:"Base FTE Months",v:`${s.fL}–${s.fH}`,c:"var(--amber)"},{l:"+ QA & Testing Buffer (2×)",v:`${(s.fL*2).toFixed(1)}–${(s.fH*2).toFixed(1)}`,c:"var(--red)",hl:true}
-  ];
-  document.getElementById('effortTable').innerHTML=rows.map(r=>
-    `<div class="effort-row${r.hl?' highlight':''}"><span class="effort-label">${r.l}</span><span class="effort-val" style="color:${r.c}">${r.v}</span></div>`
-  ).join('')+`<div class="recommend"><div class="recommend-label">Recommended Engagement</div><div class="recommend-val">1 FTE × 6–12 Months</div></div>`;
+  var rows=[{l:"Total CR Objects",v:s.n,c:"#f59e0b"},{l:"Avg Hours Per Report",v:HL+"–"+HH+" hrs",c:"#3b82f6"},{l:"Total Conversion Hours",v:s.hL+"–"+s.hH+" hrs",c:"#ef4444"},{l:"Working Hours/Month",v:"160 hrs",c:"#94a3b8"},{l:"Base FTE Months",v:s.fL+"–"+s.fH,c:"#f59e0b"},{l:"+ QA & Testing Buffer (2×)",v:(s.fL*2).toFixed(1)+"–"+(s.fH*2).toFixed(1),c:"#ef4444",hl:true}];
+  document.getElementById('effortTable').innerHTML=rows.map(function(r){return'<div class="effort-row'+(r.hl?' highlight':'')+'"><span class="effort-label">'+r.l+'</span><span class="effort-val" style="color:'+r.c+'">'+r.v+'</span></div>'}).join('')+'<div class="recommend"><div class="recommend-label">Recommended Engagement</div><div class="recommend-val">1 FTE × 6–12 Months</div></div>';
 
   // Phase cards
-  const phases=[{q:"2026-Q1",p:"High",col:"var(--red)"},{q:"2026-Q2",p:"Medium",col:"var(--amber)"},{q:"2026-Q3",p:"Low",col:"var(--green)"}];
-  document.getElementById('phaseCards').innerHTML=phases.map(ph=>{
-    const reps=RAW.filter(r=>r.p===ph.p).length;
-    const isSel=selPriority===ph.p;
-    return `<div class="phase-card" style="background:${isSel?'rgba(255,255,255,.05)':'rgba(255,255,255,.02)'};border:1px solid ${isSel?ph.col:'rgba(255,255,255,.06)'}" onclick="selPriority=selPriority==='${ph.p}'?null:'${ph.p}';render()">
-      <div class="phase-q" style="color:${ph.col}">${ph.q}</div>
-      <div class="phase-num">${reps}</div>
-      <div class="phase-sub">reports · ${reps*HH} hrs</div>
-      <div class="phase-badge" style="color:${ph.col};background:rgba(255,255,255,.05)">${ph.p} Priority</div>
-    </div>`;
+  var phases=[{q:"2026-Q1",p:"High",col:"#ef4444"},{q:"2026-Q2",p:"Medium",col:"#f59e0b"},{q:"2026-Q3",p:"Low",col:"#10b981"}];
+  document.getElementById('phaseCards').innerHTML=phases.map(function(ph){
+    var reps=RAW.filter(function(r){return r.p===ph.p}).length;
+    var isSel=selPriority===ph.p;
+    return'<div class="phase-card" style="background:'+(isSel?'rgba(255,255,255,.05)':'rgba(255,255,255,.02)')+';border:1px solid '+(isSel?ph.col:'rgba(255,255,255,.06)')+'" onclick="selPriority=selPriority===\''+ph.p+'\'?null:\''+ph.p+'\';render()"><div class="phase-q" style="color:'+ph.col+'">'+ph.q+'</div><div class="phase-num">'+reps+'</div><div class="phase-sub">reports · '+reps*HH+' hrs</div><div class="phase-badge" style="color:'+ph.col+';background:rgba(255,255,255,.05)">'+ph.p+' Priority</div></div>'
   }).join('');
 
   // Detail table
-  document.getElementById('detailTitle').textContent=`CR Report Detail — ${f.length} of ${RAW.length} records`;
+  document.getElementById('detailTitle').textContent='CR Report Detail — '+f.length+' of '+RAW.length+' records';
   document.getElementById('detailSub').textContent=hf?'Showing filtered results':'All CR objects';
-  document.getElementById('detailBody').innerHTML=f.map(r=>
-    `<tr><td style="color:var(--text);font-weight:600">${r.n}</td><td style="color:var(--muted)">${r.a}</td><td><span class="badge badge-${r.p.toLowerCase()}">${r.p}</span></td><td style="color:var(--amber);font-weight:700">${HL}–${HH}</td></tr>`
-  ).join('');
+  document.getElementById('detailBody').innerHTML=f.map(function(r){return'<tr><td style="color:#f1f5f9;font-weight:600">'+r.n+'</td><td style="color:#94a3b8">'+r.a+'</td><td><span class="badge badge-'+r.p.toLowerCase()+'">'+r.p+'</span></td><td style="color:#f59e0b;font-weight:700">'+HL+'–'+HH+'</td></tr>'}).join('');
 
-  // ─── CHARTS ───
-  renderCharts(s);
+  // Charts - destroy all, rebuild only for active tab
+  destroyAll();
+
+  if(currentTab===0) renderTab0(s);
+  else if(currentTab===1) renderTab1(s);
+  else if(currentTab===2) renderTab2();
 }
 
-function renderCharts(s){
-  Object.values(charts).forEach(c=>{if(c)c.destroy()});
-  charts={};
+function renderTab0(s){
+  var aData=byAreaArr();
 
-  if(currentTab===0||currentTab===1){
-    // Priority bar (horizontal)
-    const prioData=[
-      {label:"High",count:RAW.filter(r=>r.p==="High").length},
-      {label:"Medium",count:RAW.filter(r=>r.p==="Medium").length},
-      {label:"Low",count:RAW.filter(r=>r.p==="Low").length}
-    ];
-    if(document.getElementById('chart_prio')){
-      charts.prio=new Chart(document.getElementById('chart_prio'),{type:'bar',
-        data:{labels:prioData.map(d=>d.label),datasets:[{data:prioData.map(d=>d.count),
-          backgroundColor:prioData.map(d=>selPriority&&selPriority!==d.label?PCOL_DIM[d.label]:PCOL[d.label]),
-          borderColor:prioData.map(d=>selPriority===d.label?'#fff':'transparent'),borderWidth:prioData.map(d=>selPriority===d.label?2:0),
-          borderRadius:5,barThickness:28}]},
-        options:{indexAxis:'y',scales:{x:{grid:{display:false},ticks:{color:'#475569'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}},
-          onClick(e,el){if(el.length){const l=prioData[el[0].index].label;selPriority=selPriority===l?null:l;render()}}}
-      });
-    }
+  // Priority horizontal bar
+  var prioLabels=["High","Medium","Low"];
+  var prioCounts=[RAW.filter(function(r){return r.p==="High"}).length,RAW.filter(function(r){return r.p==="Medium"}).length,RAW.filter(function(r){return r.p==="Low"}).length];
+  charts.prio=new Chart(document.getElementById('c_prio'),{type:'bar',
+    data:{labels:prioLabels,datasets:[{data:prioCounts,
+      backgroundColor:prioLabels.map(function(l){return selPriority&&selPriority!==l?PCOL_DIM[l]:PCOL[l]}),
+      borderColor:prioLabels.map(function(l){return selPriority===l?'#fff':'transparent'}),
+      borderWidth:prioLabels.map(function(l){return selPriority===l?2:0}),
+      borderRadius:5,barThickness:28}]},
+    options:{indexAxis:'y',scales:{x:{grid:{display:false},ticks:{color:'#475569'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}},
+      onClick:function(e,el){if(el.length){var l=prioLabels[el[0].index];selPriority=selPriority===l?null:l;render()}}}
+  });
 
-    // Quarter bar
-    const qData=[
-      {label:"2026-Q1",hours:s.hi*HH,color:'#ef4444'},{label:"2026-Q2",hours:s.me*HH,color:'#f59e0b'},{label:"2026-Q3",hours:s.lo*HH,color:'#10b981'}
-    ].filter(d=>d.hours>0);
-    if(document.getElementById('chart_quarter')){
-      charts.quarter=new Chart(document.getElementById('chart_quarter'),{type:'bar',
-        data:{labels:qData.map(d=>d.label),datasets:[{data:qData.map(d=>d.hours),backgroundColor:qData.map(d=>d.color),borderRadius:5,barThickness:44,label:'Est. Hours'}]},
-        options:{scales:{x:{grid:{display:false}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
-      });
-    }
+  // Quarter bar
+  var qLabels=[],qHours=[],qColors=[];
+  if(s.hi>0){qLabels.push("2026-Q1");qHours.push(s.hi*HH);qColors.push("#ef4444")}
+  if(s.me>0){qLabels.push("2026-Q2");qHours.push(s.me*HH);qColors.push("#f59e0b")}
+  if(s.lo>0){qLabels.push("2026-Q3");qHours.push(s.lo*HH);qColors.push("#10b981")}
+  charts.quarter=new Chart(document.getElementById('c_quarter'),{type:'bar',
+    data:{labels:qLabels,datasets:[{data:qHours,backgroundColor:qColors,borderRadius:5,barThickness:44,label:'Est. Hours'}]},
+    options:{scales:{x:{grid:{display:false}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
+  });
 
-    // Area bar (horizontal)
-    const aData=byArea();
-    const makeAreaChart=(id)=>{
-      if(!document.getElementById(id))return null;
-      return new Chart(document.getElementById(id),{type:'bar',
-        data:{labels:aData.map(d=>d[0]),datasets:[{data:aData.map(d=>id==='chart_area'?d[1]*HH:d[1]),
-          backgroundColor:aData.map(d=>selArea&&selArea!==d[0]?'rgba(245,158,11,.13)':'#f59e0b'),
-          borderColor:aData.map(d=>selArea===d[0]?'#fff':'transparent'),borderWidth:aData.map(d=>selArea===d[0]?2:0),
-          borderRadius:5,barThickness:18,label:id==='chart_area'?'Est. Hours':'CR Reports'}]},
-        options:{indexAxis:id==='chart_area'?'y':'x',
-          scales:{x:{grid:{display:id==='chart_area'},ticks:{color:'#475569',maxRotation:id==='chart_area2'?30:0}},y:{grid:{display:id!=='chart_area'},ticks:{color:'#94a3b8',font:{size:10}}}},
-          onClick(e,el){if(el.length){const l=aData[el[0].index][0];selArea=selArea===l?null:l;render()}}}
-      });
-    };
-    charts.area=makeAreaChart('chart_area');
-    charts.area2=makeAreaChart('chart_area2');
-
-    // Pie
-    if(document.getElementById('chart_pie')){
-      const pieD=[
-        {label:"High",count:RAW.filter(r=>r.p==="High").length,color:'#ef4444'},
-        {label:"Medium",count:RAW.filter(r=>r.p==="Medium").length,color:'#f59e0b'},
-        {label:"Low",count:RAW.filter(r=>r.p==="Low").length,color:'#10b981'}
-      ];
-      charts.pie=new Chart(document.getElementById('chart_pie'),{type:'doughnut',
-        data:{labels:pieD.map(d=>d.label+' ('+d.count+')'),datasets:[{data:pieD.map(d=>d.count),
-          backgroundColor:pieD.map(d=>selPriority&&selPriority!==d.label?d.color+'22':d.color),
-          borderColor:pieD.map(d=>selPriority===d.label?'#fff':'#0d1321'),borderWidth:pieD.map(d=>selPriority===d.label?3:2),
-          hoverOffset:8}]},
-        options:{cutout:'55%',plugins:{legend:{display:true,position:'bottom',labels:{padding:14,usePointStyle:true,pointStyle:'circle',color:'#94a3b8',font:{size:11,family:"'JetBrains Mono',monospace"}}}},
-          onClick(e,el){if(el.length){const l=pieD[el[0].index].label;selPriority=selPriority===l?null:l;render()}}}
-      });
-    }
-  }
-
-  if(currentTab===2){
-    // Types
-    const types=[{n:"Date Archive",c:266},{n:"Dept/Functional",c:130},{n:"CR Object",c:57},{n:"WebI Cache",c:28},{n:"Pathlore",c:22},{n:"Finance",c:20},{n:"Inactive",c:18},{n:"BI Admin",c:17},{n:"Dashboard",c:16},{n:"Other",c:104}];
-    const tCols=["#f59e0b","#3b82f6","#ef4444","#10b981","#a78bfa","#ec4899","#06b6d4","#f97316","#84cc16","#e879f9"];
-    charts.types=new Chart(document.getElementById('chart_types'),{type:'bar',
-      data:{labels:types.map(d=>d.n),datasets:[{data:types.map(d=>d.c),backgroundColor:tCols,borderRadius:5,barThickness:18}]},
-      options:{indexAxis:'y',scales:{x:{grid:{display:false},ticks:{color:'#475569'}},y:{grid:{display:false},ticks:{font:{size:10}}}}}
-    });
-
-    // Depth
-    const depths=[{d:"Level 1",c:33},{d:"Level 2",c:119},{d:"Level 3",c:246},{d:"Level 4",c:196},{d:"Level 5",c:75},{d:"Level 6",c:9}];
-    charts.depth=new Chart(document.getElementById('chart_depth'),{type:'bar',
-      data:{labels:depths.map(d=>d.d),datasets:[{data:depths.map(d=>d.c),backgroundColor:'#3b82f6',borderRadius:5,barThickness:40}]},
-      options:{scales:{x:{grid:{display:false}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
-    });
-
-    // Timeline
-    charts.timeline=new Chart(document.getElementById('chart_timeline'),{type:'line',
-      data:{labels:TL.map(d=>d.q),datasets:[{data:TL.map(d=>d.c),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.1)',
-        fill:true,tension:.3,pointRadius:2,pointBackgroundColor:'#f59e0b',pointHoverRadius:5}]},
-      options:{scales:{x:{grid:{display:false},ticks:{color:'#475569',maxRotation:45,font:{size:8},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
-    });
-  }
+  // Area horizontal bar (hours)
+  charts.area0=new Chart(document.getElementById('c_area0'),{type:'bar',
+    data:{labels:aData.map(function(d){return d[0]}),datasets:[{data:aData.map(function(d){return d[1]*HH}),
+      backgroundColor:aData.map(function(d){return selArea&&selArea!==d[0]?'rgba(245,158,11,.13)':'#f59e0b'}),
+      borderColor:aData.map(function(d){return selArea===d[0]?'#fff':'transparent'}),
+      borderWidth:aData.map(function(d){return selArea===d[0]?2:0}),
+      borderRadius:5,barThickness:18,label:'Est. Hours'}]},
+    options:{indexAxis:'y',scales:{x:{grid:{display:false},ticks:{color:'#475569'}},y:{grid:{display:false},ticks:{color:'#94a3b8',font:{size:10}}}},
+      onClick:function(e,el){if(el.length){var l=aData[el[0].index][0];selArea=selArea===l?null:l;render()}}}
+  });
 }
 
-// ─── TABS ───
-document.querySelectorAll('.tab').forEach(btn=>{
+function renderTab1(s){
+  var aData=byAreaArr();
+
+  // Area vertical bar (counts)
+  charts.area1=new Chart(document.getElementById('c_area1'),{type:'bar',
+    data:{labels:aData.map(function(d){return d[0]}),datasets:[{data:aData.map(function(d){return d[1]}),
+      backgroundColor:aData.map(function(d){return selArea&&selArea!==d[0]?'rgba(245,158,11,.13)':'#f59e0b'}),
+      borderColor:aData.map(function(d){return selArea===d[0]?'#fff':'transparent'}),
+      borderWidth:aData.map(function(d){return selArea===d[0]?2:0}),
+      borderRadius:5,barThickness:30,label:'CR Reports'}]},
+    options:{scales:{x:{grid:{display:false},ticks:{color:'#94a3b8',font:{size:9},maxRotation:30}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}},
+      onClick:function(e,el){if(el.length){var l=aData[el[0].index][0];selArea=selArea===l?null:l;render()}}}
+  });
+
+  // Priority doughnut
+  var pieLabels=["High","Medium","Low"];
+  var pieCounts=[RAW.filter(function(r){return r.p==="High"}).length,RAW.filter(function(r){return r.p==="Medium"}).length,RAW.filter(function(r){return r.p==="Low"}).length];
+  var pieColors=["#ef4444","#f59e0b","#10b981"];
+  charts.pie=new Chart(document.getElementById('c_pie'),{type:'doughnut',
+    data:{labels:pieLabels.map(function(l,i){return l+' ('+pieCounts[i]+')'}),datasets:[{data:pieCounts,
+      backgroundColor:pieLabels.map(function(l,i){return selPriority&&selPriority!==l?pieColors[i]+'22':pieColors[i]}),
+      borderColor:pieLabels.map(function(l){return selPriority===l?'#fff':'#0d1321'}),
+      borderWidth:pieLabels.map(function(l){return selPriority===l?3:2}),
+      hoverOffset:8}]},
+    options:{cutout:'55%',plugins:{legend:{display:true,position:'bottom',labels:{padding:14,usePointStyle:true,pointStyle:'circle',color:'#94a3b8',font:{size:11,family:"'JetBrains Mono',monospace"}}}},
+      onClick:function(e,el){if(el.length){var l=pieLabels[el[0].index];selPriority=selPriority===l?null:l;render()}}}
+  });
+}
+
+function renderTab2(){
+  // Folder types horizontal bar
+  var types=[["Date Archive",266],["Dept/Functional",130],["CR Object",57],["WebI Cache",28],["Pathlore",22],["Finance",20],["Inactive",18],["BI Admin",17],["Dashboard",16],["Other",104]];
+  var tCols=["#f59e0b","#3b82f6","#ef4444","#10b981","#a78bfa","#ec4899","#06b6d4","#f97316","#84cc16","#e879f9"];
+  charts.types=new Chart(document.getElementById('c_types'),{type:'bar',
+    data:{labels:types.map(function(d){return d[0]}),datasets:[{data:types.map(function(d){return d[1]}),backgroundColor:tCols,borderRadius:5,barThickness:18}]},
+    options:{indexAxis:'y',scales:{x:{grid:{display:false},ticks:{color:'#475569'}},y:{grid:{display:false},ticks:{font:{size:10}}}}}
+  });
+
+  // Depth vertical bar
+  var depths=[["Level 1",33],["Level 2",119],["Level 3",246],["Level 4",196],["Level 5",75],["Level 6",9]];
+  charts.depth=new Chart(document.getElementById('c_depth'),{type:'bar',
+    data:{labels:depths.map(function(d){return d[0]}),datasets:[{data:depths.map(function(d){return d[1]}),backgroundColor:'#3b82f6',borderRadius:5,barThickness:40}]},
+    options:{scales:{x:{grid:{display:false}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
+  });
+
+  // Timeline line chart
+  charts.timeline=new Chart(document.getElementById('c_timeline'),{type:'line',
+    data:{labels:TL.map(function(d){return d.q}),datasets:[{data:TL.map(function(d){return d.c}),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.1)',fill:true,tension:.3,pointRadius:2,pointBackgroundColor:'#f59e0b',pointHoverRadius:5}]},
+    options:{scales:{x:{grid:{display:false},ticks:{color:'#475569',maxRotation:45,font:{size:8},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
+  });
+}
+
+// Tab switching
+document.querySelectorAll('.tab').forEach(function(btn){
   btn.addEventListener('click',function(){
-    currentTab=parseInt(this.dataset.tab);
-    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    currentTab=parseInt(this.getAttribute('data-tab'));
+    document.querySelectorAll('.tab').forEach(function(b){b.classList.remove('active')});
     this.classList.add('active');
-    document.getElementById('tab0').classList.toggle('hidden',currentTab!==0);
-    document.getElementById('tab1').classList.toggle('hidden',currentTab!==1);
-    document.getElementById('tab2').classList.toggle('hidden',currentTab!==2);
+    document.getElementById('tab0').className=currentTab===0?'':'hidden';
+    document.getElementById('tab1').className=currentTab===1?'':'hidden';
+    document.getElementById('tab2').className=currentTab===2?'':'hidden';
     selArea=null;selPriority=null;
     render();
   });
 });
 
 function clearAll(){selArea=null;selPriority=null;render()}
-
 document.getElementById('footerDate').textContent=new Date().toLocaleDateString();
 render();
 </script>
