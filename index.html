@@ -4,350 +4,419 @@
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>CRE Analysis – Maven BI Group</title>
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet"/>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js"></script>
 <style>
-*{margin:0;padding:0;box-sizing:border-box}
-html,body,#root{width:100%;min-height:100vh;background:#060b14}
-body{font-family:'Space Grotesk',-apple-system,sans-serif}
-</style>
-<script type="importmap">
-{
-  "imports": {
-    "react": "https://esm.sh/react@18.2.0",
-    "react-dom/client": "https://esm.sh/react-dom@18.2.0/client",
-    "recharts": "https://esm.sh/recharts@2.12.7?deps=react@18.2.0,react-dom@18.2.0"
-  }
+:root{
+  --bg:#060b14;--card:#0d1321;--border:#1a2540;--grid:#1a2540;
+  --amber:#f59e0b;--amber-dim:#78350f;--red:#ef4444;--red-dim:#7f1d1d;
+  --green:#10b981;--blue:#3b82f6;--purple:#a78bfa;--cyan:#06b6d4;--pink:#ec4899;--orange:#f97316;
+  --text:#f1f5f9;--muted:#94a3b8;--dim:#475569;
+  --jm:'JetBrains Mono',monospace;--sg:'Space Grotesk',-apple-system,sans-serif;
 }
-</script>
+*{margin:0;padding:0;box-sizing:border-box}
+body{background:var(--bg);color:var(--text);font-family:var(--sg);min-height:100vh}
+.header{background:linear-gradient(135deg,var(--card) 0%,#0f172a 50%,rgba(120,53,15,.12) 100%);border-bottom:1px solid var(--border);padding:24px 28px 16px}
+.header-row{display:flex;justify-content:space-between;align-items:flex-start;flex-wrap:wrap;gap:14}
+.header-tag{font:500 10px/1 var(--jm);text-transform:uppercase;letter-spacing:3px;color:var(--amber);margin-bottom:5px}
+.header h1{font-size:24px;font-weight:800;line-height:1.2}
+.header-sub{font-size:13px;color:var(--muted);margin-top:4px}
+.req-box{background:rgba(239,68,68,.08);border:1px solid rgba(239,68,68,.2);border-radius:8px;padding:10px 16px;text-align:right}
+.req-label{font:600 10px/1 var(--jm);text-transform:uppercase;letter-spacing:1.5px;color:var(--red)}
+.req-val{font-size:22px;font-weight:800;color:var(--red)}
+.req-sub{font-size:10px;color:var(--dim)}
+.tabs{display:flex;gap:4px;margin-top:16px}
+.tab{background:transparent;color:var(--muted);border:1px solid var(--border);border-radius:5px;padding:6px 16px;font:600 12px/1 var(--sg);cursor:pointer;transition:all .15s}
+.tab.active{background:var(--amber);color:var(--bg);border-color:var(--amber)}
+.filter-bar{padding:12px 28px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:10px;min-height:44px;background:rgba(13,19,33,.5)}
+.filter-label{font:500 11px/1 var(--jm);color:var(--dim);text-transform:uppercase;letter-spacing:1px}
+.filter-hint{font-size:12px;color:var(--dim);font-style:italic}
+.pill{display:inline-flex;align-items:center;gap:6px;background:rgba(245,158,11,.09);border:1px solid rgba(245,158,11,.25);border-radius:20px;padding:5px 12px 5px 14px;font:500 12px/1 var(--jm)}
+.pill-label{color:var(--muted)}.pill-val{color:var(--amber);font-weight:700}
+.pill-x{cursor:pointer;margin-left:4px;color:var(--dim);font-size:16px;width:18px;height:18px;display:flex;align-items:center;justify-content:center;border-radius:50%;background:rgba(245,158,11,.12);transition:all .15s}
+.pill-x:hover{background:var(--red);color:#fff}
+.clear-btn{background:rgba(239,68,68,.12);border:1px solid rgba(239,68,68,.25);border-radius:5px;padding:4px 12px;font:600 11px/1 var(--jm);color:var(--red);cursor:pointer;margin-left:auto;transition:all .15s}
+.clear-btn:hover{background:var(--red);color:#fff}
+.content{padding:20px 28px;max-width:1440px;margin:0 auto}
+.grid{display:grid;gap:12px}.g5{grid-template-columns:repeat(auto-fit,minmax(170px,1fr))}.g2{grid-template-columns:1fr 1fr;gap:14px}.g4{grid-template-columns:repeat(4,1fr)}.g3{grid-template-columns:repeat(3,1fr);gap:14px}.g12-8{grid-template-columns:1.2fr .8fr;gap:14px}
+.mb14{margin-bottom:14px}.mb20{margin-bottom:20px}.mt14{margin-top:14px}
+.kpi{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:16px 18px;position:relative;overflow:hidden;transition:transform .15s}
+.kpi:hover{transform:translateY(-2px)}
+.kpi.hot{background:linear-gradient(135deg,rgba(120,53,15,.18),var(--card));border-color:rgba(245,158,11,.25)}
+.kpi.hot::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;background:linear-gradient(90deg,var(--amber),var(--red))}
+.kpi-label{font:500 10px/1 var(--jm);text-transform:uppercase;letter-spacing:1.8px;color:var(--muted);margin-bottom:6px}
+.kpi-val{font-size:28px;font-weight:800;color:var(--text);line-height:1}
+.kpi.hot .kpi-val{color:var(--amber)}
+.kpi-sub{font:400 11px/1.3 var(--jm);color:var(--dim);margin-top:5px}
+.card{background:var(--card);border:1px solid var(--border);border-radius:10px;padding:18px 20px}
+.card-head{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:14px}
+.card-title{font-size:14px;font-weight:700}
+.card-sub{font:400 11px/1.3 var(--jm);color:var(--dim);margin-top:2px}
+.click-hint{font:500 10px/1 var(--jm);color:var(--amber);opacity:.7;padding:3px 8px;background:rgba(245,158,11,.06);border-radius:4px}
+.warn{background:linear-gradient(90deg,rgba(127,29,29,.3),rgba(120,53,15,.18));border:1px solid rgba(239,68,68,.15);border-radius:8px;padding:14px 20px;display:flex;align-items:center;gap:14px}
+.warn-icon{font-size:32px}.warn-title{font-weight:700;font-size:14px;margin-bottom:3px}.warn-text{font-size:12px;color:var(--muted)}
+.effort-row{display:flex;justify-content:space-between;align-items:center;padding:10px 14px}
+.effort-row+.effort-row{border-top:1px solid var(--grid)}
+.effort-label{font-size:12px;color:var(--muted)}.effort-val{font:700 14px/1 var(--jm)}
+.effort-row.highlight{background:rgba(239,68,68,.04);border-radius:6px}
+.recommend{margin-top:14px;padding:12px 14px;background:rgba(245,158,11,.06);border:1px solid rgba(245,158,11,.15);border-radius:8px;text-align:center}
+.recommend-label{font:500 10px/1 var(--jm);color:var(--amber);text-transform:uppercase;letter-spacing:1.5px}
+.recommend-val{font-size:20px;font-weight:800;color:var(--amber);margin-top:3px}
+.phase-card{border-radius:8px;padding:18px;text-align:center;cursor:pointer;transition:all .15s}
+.phase-card:hover{transform:translateY(-2px)}
+.phase-q{font:500 10px/1 var(--jm);text-transform:uppercase;letter-spacing:1.5px}
+.phase-num{font-size:34px;font-weight:800;color:var(--text);margin-top:6px}
+.phase-sub{font-size:11px;color:var(--muted)}
+.phase-badge{margin-top:8px;font-size:10px;font-weight:600;border-radius:4px;padding:3px 10px;display:inline-block}
+.detail-wrap{max-height:300px;overflow-y:auto;margin-top:4px}
+.detail-table{width:100%;border-collapse:collapse;font:400 11px/1.4 var(--jm)}
+.detail-table th{text-align:left;padding:8px 10px;border-bottom:1px solid var(--border);color:var(--muted);font-weight:600;font-size:10px;text-transform:uppercase;letter-spacing:1px;position:sticky;top:0;background:var(--card);z-index:1}
+.detail-table td{padding:7px 10px;border-bottom:1px solid var(--grid)}
+.detail-table tr:hover td{background:rgba(245,158,11,.03)}
+.badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:3px}
+.badge-high{color:var(--red);background:rgba(239,68,68,.09)}
+.badge-medium{color:var(--amber);background:rgba(245,158,11,.09)}
+.badge-low{color:var(--green);background:rgba(16,185,129,.09)}
+.footer{text-align:center;padding:16px 28px;border-top:1px solid var(--border);margin-top:20px;font:400 10px/1 var(--jm);color:var(--dim)}
+.chart-wrap{position:relative}
+canvas{max-width:100%}
+.hidden{display:none}
+</style>
 </head>
 <body>
-<div id="root"></div>
-<script type="module">
-import React,{useState,useMemo,useCallback,createElement as h} from "react";
-import {createRoot} from "react-dom/client";
-import {BarChart,Bar,XAxis,YAxis,CartesianGrid,Tooltip,ResponsiveContainer,PieChart,Pie,Cell,LineChart,Line} from "recharts";
 
-const C={bg:"#060b14",card:"#0d1321",border:"#1a2540",amber:"#f59e0b",amberDim:"#78350f",red:"#ef4444",redDim:"#7f1d1d",green:"#10b981",blue:"#3b82f6",text:"#f1f5f9",muted:"#94a3b8",dim:"#475569",grid:"#1a2540"};
-const PAL=["#f59e0b","#3b82f6","#ef4444","#10b981","#a78bfa","#ec4899","#06b6d4","#f97316","#84cc16","#e879f9"];
+<div class="header">
+  <div class="header-row">
+    <div>
+      <div class="header-tag">SAP BusinessObjects BI Platform · 4.3 SP3</div>
+      <h1>Crystal Reports for Enterprise → CR 2020 Conversion</h1>
+      <div class="header-sub">Scope Assessment · BI 2025/2027 Compatibility</div>
+    </div>
+    <div class="req-box">
+      <div class="req-label">Resource Required</div>
+      <div class="req-val">6–12 Months</div>
+      <div class="req-sub">Dedicated FTE</div>
+    </div>
+  </div>
+  <div class="tabs">
+    <button class="tab active" data-tab="0">Executive Summary</button>
+    <button class="tab" data-tab="1">Conversion Scope</button>
+    <button class="tab" data-tab="2">Platform Analysis</button>
+  </div>
+</div>
+
+<div class="filter-bar" id="filterBar">
+  <span class="filter-label">Filters:</span>
+  <span class="filter-hint" id="filterHint">None — click any chart element to filter</span>
+  <span id="filterPills"></span>
+  <button class="clear-btn hidden" id="clearBtn" onclick="clearAll()">Clear All ×</button>
+</div>
+
+<div class="content">
+  <!-- TAB 0 -->
+  <div id="tab0">
+    <div class="grid g5 mb20" id="kpiRow0"></div>
+    <div class="warn mb20">
+      <div class="warn-icon">⚠</div>
+      <div>
+        <div class="warn-title">CRE is incompatible with SAP BI 2025/2027</div>
+        <div class="warn-text">All 63 Crystal Report objects must be converted to CR 2020. At 5–10 hours per report, this is 315–630 total hours — justifying a dedicated FTE for 6–12 months including QA.</div>
+      </div>
+    </div>
+    <div class="grid g2 mb14">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">CR Reports by Priority</div><div class="card-sub">Click to highlight — KPIs update</div></div><div class="click-hint">Click to highlight & filter</div></div>
+        <div class="chart-wrap"><canvas id="chart_prio" height="200"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Conversion Workload by Planned Quarter</div><div class="card-sub">Reflects active filters</div></div></div>
+        <div class="chart-wrap"><canvas id="chart_quarter" height="200"></canvas></div>
+      </div>
+    </div>
+    <div class="grid g2">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Conversion Hours by Functional Area</div><div class="card-sub">Click to highlight — KPIs update</div></div><div class="click-hint">Click to highlight & filter</div></div>
+        <div class="chart-wrap"><canvas id="chart_area" height="260"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Effort Justification</div><div class="card-sub">Resource calculation breakdown</div></div></div>
+        <div id="effortTable"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- TAB 1 -->
+  <div id="tab1" class="hidden">
+    <div class="grid g4 mb20" id="kpiRow1"></div>
+    <div class="grid g12-8 mb14">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">CR Reports by Functional Area</div><div class="card-sub">Click bars to highlight & cross-filter</div></div><div class="click-hint">Click to highlight & filter</div></div>
+        <div class="chart-wrap"><canvas id="chart_area2" height="300"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Priority Distribution</div><div class="card-sub">Click slices to highlight & filter</div></div></div>
+        <div class="chart-wrap"><canvas id="chart_pie" height="300"></canvas></div>
+      </div>
+    </div>
+    <div class="card mb14">
+      <div class="card-head"><div><div class="card-title">Conversion Timeline & Phasing</div><div class="card-sub">Click a phase card to filter by priority</div></div></div>
+      <div class="grid g3" id="phaseCards"></div>
+    </div>
+    <div class="card mt14">
+      <div class="card-head"><div><div class="card-title" id="detailTitle">CR Report Detail — 63 of 63 records</div><div class="card-sub" id="detailSub">All CR objects</div></div></div>
+      <div class="detail-wrap"><table class="detail-table"><thead><tr><th>Report</th><th>Functional Area</th><th>Priority</th><th>Est. Hours</th></tr></thead><tbody id="detailBody"></tbody></table></div>
+    </div>
+  </div>
+
+  <!-- TAB 2 -->
+  <div id="tab2" class="hidden">
+    <div class="grid g5 mb20">
+      <div class="kpi"><div class="kpi-label">Total Folders</div><div class="kpi-val">678</div></div>
+      <div class="kpi"><div class="kpi-label">Active</div><div class="kpi-val">660</div><div class="kpi-sub">97.3%</div></div>
+      <div class="kpi"><div class="kpi-label">Date Archives</div><div class="kpi-val">266</div><div class="kpi-sub">39.2%</div></div>
+      <div class="kpi"><div class="kpi-label">System/Cache</div><div class="kpi-val">7</div></div>
+      <div class="kpi"><div class="kpi-label">Max Depth</div><div class="kpi-val">6</div><div class="kpi-sub">Nesting levels</div></div>
+    </div>
+    <div class="grid g2 mb14">
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Folder Type Distribution</div></div></div>
+        <div class="chart-wrap"><canvas id="chart_types" height="280"></canvas></div>
+      </div>
+      <div class="card">
+        <div class="card-head"><div><div class="card-title">Hierarchy Depth Distribution</div></div></div>
+        <div class="chart-wrap"><canvas id="chart_depth" height="280"></canvas></div>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-head"><div><div class="card-title">BI Platform Activity Timeline</div><div class="card-sub">Date-based archive/LCM promotion folders — sustained usage 2015–2026</div></div></div>
+      <div class="chart-wrap"><canvas id="chart_timeline" height="220"></canvas></div>
+    </div>
+  </div>
+</div>
+
+<div class="footer">Source: SAP BI Platform Query Builder · 678 InfoObjects · <span id="footerDate"></span> · Maven BI Group</div>
+
+<script>
+// ─── DATA ───
 const HL=5,HH=10;
-
 const RAW=[
-{id:1,name:"CR6135",area:"Finance",p:"High"},{id:2,name:"CR5867",area:"Finance",p:"High"},{id:3,name:"CR6902",area:"Finance",p:"High"},{id:4,name:"CR6905",area:"Finance",p:"High"},{id:5,name:"CR8123",area:"Finance",p:"High"},{id:6,name:"CR8124",area:"Finance",p:"High"},{id:7,name:"CR8125",area:"Finance",p:"High"},{id:8,name:"CR8126",area:"Finance",p:"High"},{id:9,name:"CR8127",area:"Finance",p:"High"},{id:10,name:"CR6604",area:"Finance",p:"High"},{id:11,name:"CR8205",area:"Finance",p:"High"},{id:12,name:"CR7877",area:"Finance",p:"High"},{id:13,name:"CR5694",area:"Finance",p:"High"},{id:14,name:"CR6354",area:"Finance",p:"High"},{id:15,name:"CR7402",area:"Finance",p:"High"},{id:16,name:"CR7535",area:"Finance",p:"High"},{id:17,name:"CR7557",area:"Finance",p:"High"},{id:18,name:"CR7628",area:"Finance",p:"High"},{id:19,name:"CR7682",area:"Finance",p:"High"},{id:20,name:"CR8004",area:"Finance",p:"High"},{id:21,name:"CR4687",area:"GM Reports",p:"High"},{id:22,name:"CR5633",area:"GM Reports",p:"High"},{id:23,name:"CR7083",area:"GM Reports",p:"High"},{id:24,name:"CR6909",area:"GM Reports",p:"High"},{id:25,name:"CR4798",area:"Finance",p:"High"},{id:26,name:"CR4723",area:"Finance",p:"High"},{id:27,name:"CR4812",area:"Finance",p:"High"},{id:28,name:"CR5224",area:"Finance",p:"High"},{id:29,name:"CR7319",area:"Finance",p:"High"},{id:30,name:"CR7929",area:"Finance",p:"High"},{id:31,name:"CR8137",area:"Finance",p:"High"},{id:32,name:"CR8257",area:"Finance",p:"High"},{id:33,name:"CR8473",area:"Finance",p:"High"},{id:34,name:"CR8639",area:"Finance",p:"High"},{id:35,name:"CR8834",area:"Finance",p:"High"},{id:36,name:"CR8866",area:"Finance",p:"High"},{id:37,name:"CR8911",area:"Finance",p:"High"},{id:38,name:"CR9038",area:"Grants Mgmt",p:"High"},{id:39,name:"CR8457",area:"Grants Mgmt",p:"High"},{id:40,name:"CR9167",area:"Grants Mgmt",p:"High"},{id:41,name:"CR7291",area:"Human Resources",p:"High"},{id:42,name:"CR9023",area:"Human Resources",p:"High"},{id:43,name:"CR8640",area:"Human Resources",p:"High"},{id:44,name:"CR6992",area:"Human Resources",p:"High"},{id:45,name:"CR7187",area:"Dept-Specific",p:"Medium"},{id:46,name:"CR7824",area:"Dept-Specific",p:"Medium"},{id:47,name:"CR8013",area:"Dept-Specific",p:"Medium"},{id:48,name:"CR8024",area:"Dept-Specific",p:"Medium"},{id:49,name:"CR8025",area:"Dept-Specific",p:"Medium"},{id:50,name:"CR8026",area:"Dept-Specific",p:"Medium"},{id:51,name:"CR8027",area:"Dept-Specific",p:"Medium"},{id:52,name:"CR8230",area:"Dept-Specific",p:"Medium"},{id:53,name:"CR 7167",area:"Ops/Purchasing",p:"Medium"},{id:54,name:"CR 12201",area:"Dept-Specific",p:"Medium"},{id:55,name:"CR5719",area:"Dept-Specific",p:"Medium"},{id:56,name:"cr20983",area:"BI Admin",p:"Low"},{id:57,name:"CR7682b",area:"Ops/Purchasing",p:"Medium"},{id:58,name:"CR8192",area:"Dept-Specific",p:"Medium"},{id:59,name:"CR5867b",area:"Student Info",p:"High"},{id:60,name:"CR6469",area:"Student Info",p:"High"},{id:61,name:"CR5694b",area:"Ops/Purchasing",p:"Medium"},{id:62,name:"ZFI_BW_General",area:"Finance",p:"High"},{id:63,name:"CR8155",area:"BI Admin",p:"Low"}
+{id:1,n:"CR6135",a:"Finance",p:"High"},{id:2,n:"CR5867",a:"Finance",p:"High"},{id:3,n:"CR6902",a:"Finance",p:"High"},{id:4,n:"CR6905",a:"Finance",p:"High"},{id:5,n:"CR8123",a:"Finance",p:"High"},{id:6,n:"CR8124",a:"Finance",p:"High"},{id:7,n:"CR8125",a:"Finance",p:"High"},{id:8,n:"CR8126",a:"Finance",p:"High"},{id:9,n:"CR8127",a:"Finance",p:"High"},{id:10,n:"CR6604",a:"Finance",p:"High"},{id:11,n:"CR8205",a:"Finance",p:"High"},{id:12,n:"CR7877",a:"Finance",p:"High"},{id:13,n:"CR5694",a:"Finance",p:"High"},{id:14,n:"CR6354",a:"Finance",p:"High"},{id:15,n:"CR7402",a:"Finance",p:"High"},{id:16,n:"CR7535",a:"Finance",p:"High"},{id:17,n:"CR7557",a:"Finance",p:"High"},{id:18,n:"CR7628",a:"Finance",p:"High"},{id:19,n:"CR7682",a:"Finance",p:"High"},{id:20,n:"CR8004",a:"Finance",p:"High"},{id:21,n:"CR4687",a:"GM Reports",p:"High"},{id:22,n:"CR5633",a:"GM Reports",p:"High"},{id:23,n:"CR7083",a:"GM Reports",p:"High"},{id:24,n:"CR6909",a:"GM Reports",p:"High"},{id:25,n:"CR4798",a:"Finance",p:"High"},{id:26,n:"CR4723",a:"Finance",p:"High"},{id:27,n:"CR4812",a:"Finance",p:"High"},{id:28,n:"CR5224",a:"Finance",p:"High"},{id:29,n:"CR7319",a:"Finance",p:"High"},{id:30,n:"CR7929",a:"Finance",p:"High"},{id:31,n:"CR8137",a:"Finance",p:"High"},{id:32,n:"CR8257",a:"Finance",p:"High"},{id:33,n:"CR8473",a:"Finance",p:"High"},{id:34,n:"CR8639",a:"Finance",p:"High"},{id:35,n:"CR8834",a:"Finance",p:"High"},{id:36,n:"CR8866",a:"Finance",p:"High"},{id:37,n:"CR8911",a:"Finance",p:"High"},{id:38,n:"CR9038",a:"Grants Mgmt",p:"High"},{id:39,n:"CR8457",a:"Grants Mgmt",p:"High"},{id:40,n:"CR9167",a:"Grants Mgmt",p:"High"},{id:41,n:"CR7291",a:"Human Resources",p:"High"},{id:42,n:"CR9023",a:"Human Resources",p:"High"},{id:43,n:"CR8640",a:"Human Resources",p:"High"},{id:44,n:"CR6992",a:"Human Resources",p:"High"},{id:45,n:"CR7187",a:"Dept-Specific",p:"Medium"},{id:46,n:"CR7824",a:"Dept-Specific",p:"Medium"},{id:47,n:"CR8013",a:"Dept-Specific",p:"Medium"},{id:48,n:"CR8024",a:"Dept-Specific",p:"Medium"},{id:49,n:"CR8025",a:"Dept-Specific",p:"Medium"},{id:50,n:"CR8026",a:"Dept-Specific",p:"Medium"},{id:51,n:"CR8027",a:"Dept-Specific",p:"Medium"},{id:52,n:"CR8230",a:"Dept-Specific",p:"Medium"},{id:53,n:"CR 7167",a:"Ops/Purchasing",p:"Medium"},{id:54,n:"CR 12201",a:"Dept-Specific",p:"Medium"},{id:55,n:"CR5719",a:"Dept-Specific",p:"Medium"},{id:56,n:"cr20983",a:"BI Admin",p:"Low"},{id:57,n:"CR7682b",a:"Ops/Purchasing",p:"Medium"},{id:58,n:"CR8192",a:"Dept-Specific",p:"Medium"},{id:59,n:"CR5867b",a:"Student Info",p:"High"},{id:60,n:"CR6469",a:"Student Info",p:"High"},{id:61,n:"CR5694b",a:"Ops/Purchasing",p:"Medium"},{id:62,n:"ZFI_BW_General",a:"Finance",p:"High"},{id:63,n:"CR8155",a:"BI Admin",p:"Low"}
 ];
+const TL=[{q:"2015-Q1",c:7},{q:"2015-Q2",c:10},{q:"2015-Q3",c:8},{q:"2015-Q4",c:10},{q:"2016-Q1",c:9},{q:"2016-Q2",c:6},{q:"2016-Q3",c:4},{q:"2016-Q4",c:6},{q:"2017-Q1",c:9},{q:"2017-Q2",c:2},{q:"2017-Q3",c:5},{q:"2017-Q4",c:8},{q:"2018-Q1",c:5},{q:"2018-Q2",c:2},{q:"2018-Q3",c:3},{q:"2018-Q4",c:8},{q:"2019-Q1",c:8},{q:"2019-Q2",c:3},{q:"2019-Q3",c:7},{q:"2019-Q4",c:12},{q:"2020-Q1",c:3},{q:"2020-Q2",c:6},{q:"2020-Q3",c:8},{q:"2020-Q4",c:8},{q:"2021-Q1",c:2},{q:"2021-Q2",c:3},{q:"2021-Q3",c:4},{q:"2021-Q4",c:4},{q:"2022-Q1",c:8},{q:"2022-Q2",c:10},{q:"2022-Q3",c:7},{q:"2022-Q4",c:10},{q:"2023-Q1",c:2},{q:"2023-Q2",c:6},{q:"2023-Q3",c:8},{q:"2023-Q4",c:3},{q:"2024-Q1",c:7},{q:"2024-Q2",c:5},{q:"2024-Q3",c:3},{q:"2024-Q4",c:5},{q:"2025-Q1",c:4},{q:"2025-Q2",c:7},{q:"2025-Q3",c:5},{q:"2025-Q4",c:3},{q:"2026-Q1",c:1}];
 
-const TL=[{yq:"2015-Q1",c:7},{yq:"2015-Q2",c:10},{yq:"2015-Q3",c:8},{yq:"2015-Q4",c:10},{yq:"2016-Q1",c:9},{yq:"2016-Q2",c:6},{yq:"2016-Q3",c:4},{yq:"2016-Q4",c:6},{yq:"2017-Q1",c:9},{yq:"2017-Q2",c:2},{yq:"2017-Q3",c:5},{yq:"2017-Q4",c:8},{yq:"2018-Q1",c:5},{yq:"2018-Q2",c:2},{yq:"2018-Q3",c:3},{yq:"2018-Q4",c:8},{yq:"2019-Q1",c:8},{yq:"2019-Q2",c:3},{yq:"2019-Q3",c:7},{yq:"2019-Q4",c:12},{yq:"2020-Q1",c:3},{yq:"2020-Q2",c:6},{yq:"2020-Q3",c:8},{yq:"2020-Q4",c:8},{yq:"2021-Q1",c:2},{yq:"2021-Q2",c:3},{yq:"2021-Q3",c:4},{yq:"2021-Q4",c:4},{yq:"2022-Q1",c:8},{yq:"2022-Q2",c:10},{yq:"2022-Q3",c:7},{yq:"2022-Q4",c:10},{yq:"2023-Q1",c:2},{yq:"2023-Q2",c:6},{yq:"2023-Q3",c:8},{yq:"2023-Q4",c:3},{yq:"2024-Q1",c:7},{yq:"2024-Q2",c:5},{yq:"2024-Q3",c:3},{yq:"2024-Q4",c:5},{yq:"2025-Q1",c:4},{yq:"2025-Q2",c:7},{yq:"2025-Q3",c:5},{yq:"2025-Q4",c:3},{yq:"2026-Q1",c:1}];
+const PCOL={High:"#ef4444",Medium:"#f59e0b",Low:"#10b981"};
+const PCOL_DIM={High:"rgba(239,68,68,.15)",Medium:"rgba(245,158,11,.15)",Low:"rgba(16,185,129,.15)"};
 
-const jm="'JetBrains Mono',monospace";
+// ─── STATE ───
+let selArea=null, selPriority=null, currentTab=0;
+let charts={};
 
-function Pill({label,value,onClear}){
-  return h("div",{style:{display:"inline-flex",alignItems:"center",gap:6,background:C.amber+"18",border:"1px solid "+C.amber+"40",borderRadius:20,padding:"5px 12px 5px 14px",fontSize:12,fontFamily:jm}},
-    h("span",{style:{color:C.muted}},label+":"),
-    h("span",{style:{color:C.amber,fontWeight:700}},value),
-    h("span",{onClick:onClear,style:{cursor:"pointer",marginLeft:4,color:C.dim,fontSize:16,width:18,height:18,display:"flex",alignItems:"center",justifyContent:"center",borderRadius:"50%",background:C.amber+"20"}},"×")
-  );
+// ─── HELPERS ───
+function getFiltered(){
+  let d=RAW;
+  if(selArea) d=d.filter(r=>r.a===selArea);
+  if(selPriority) d=d.filter(r=>r.p===selPriority);
+  return d;
+}
+function getStats(f){
+  const n=f.length;
+  return{n,hL:n*HL,hH:n*HH,fL:(n*HL/160).toFixed(1),fH:(n*HH/160).toFixed(1),
+    hi:f.filter(r=>r.p==="High").length,me:f.filter(r=>r.p==="Medium").length,lo:f.filter(r=>r.p==="Low").length};
+}
+function byArea(){
+  const m={};RAW.forEach(r=>{m[r.a]=(m[r.a]||0)+1});
+  return Object.entries(m).sort((a,b)=>b[1]-a[1]);
 }
 
-function KPI({label,value,sub,hot}){
-  return h("div",{style:{background:hot?"linear-gradient(135deg,"+C.amberDim+"30,"+C.card+")":C.card,border:"1px solid "+(hot?C.amber+"40":C.border),borderRadius:10,padding:"16px 18px",position:"relative",overflow:"hidden"}},
-    hot&&h("div",{style:{position:"absolute",top:0,left:0,right:0,height:2,background:"linear-gradient(90deg,"+C.amber+","+C.red+")"}}),
-    h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:1.8,color:C.muted,marginBottom:6,fontFamily:jm}},label),
-    h("div",{style:{fontSize:28,fontWeight:800,color:hot?C.amber:C.text,lineHeight:1}},value),
-    sub&&h("div",{style:{fontSize:11,color:C.dim,marginTop:5,fontFamily:jm}},sub)
-  );
+// ─── CHART DEFAULTS ───
+Chart.defaults.color='#94a3b8';
+Chart.defaults.borderColor='#1a2540';
+Chart.defaults.font.family="'Space Grotesk',-apple-system,sans-serif";
+Chart.defaults.font.size=11;
+Chart.defaults.plugins.legend.display=false;
+Chart.defaults.plugins.tooltip.backgroundColor='#1e293b';
+Chart.defaults.plugins.tooltip.borderColor='#1a2540';
+Chart.defaults.plugins.tooltip.borderWidth=1;
+Chart.defaults.plugins.tooltip.titleFont={weight:'700',size:12};
+Chart.defaults.plugins.tooltip.bodyFont={size:11};
+Chart.defaults.plugins.tooltip.padding=10;
+Chart.defaults.plugins.tooltip.cornerRadius=6;
+Chart.defaults.scale.grid={color:'#1a2540'};
+
+// ─── RENDER ───
+function render(){
+  const f=getFiltered(), s=getStats(f), hf=selArea||selPriority;
+
+  // Filter bar
+  document.getElementById('filterHint').classList.toggle('hidden',hf);
+  document.getElementById('clearBtn').classList.toggle('hidden',!hf);
+  document.getElementById('filterBar').classList.toggle('hidden',currentTab>=2);
+  let pills='';
+  if(selArea) pills+=`<span class="pill"><span class="pill-label">Area:</span><span class="pill-val">${selArea}</span><span class="pill-x" onclick="selArea=null;render()">×</span></span> `;
+  if(selPriority) pills+=`<span class="pill"><span class="pill-label">Priority:</span><span class="pill-val">${selPriority}</span><span class="pill-x" onclick="selPriority=null;render()">×</span></span>`;
+  document.getElementById('filterPills').innerHTML=pills;
+
+  // KPIs Tab 0
+  document.getElementById('kpiRow0').innerHTML=`
+    <div class="kpi"><div class="kpi-label">Total BI Folders</div><div class="kpi-val">678</div><div class="kpi-sub">Entire platform</div></div>
+    <div class="kpi hot"><div class="kpi-label">CR Objects</div><div class="kpi-val">${s.n}</div><div class="kpi-sub">${hf?'Filtered':'Requiring conversion'}</div></div>
+    <div class="kpi hot"><div class="kpi-label">Est. Hours</div><div class="kpi-val">${s.hL}–${s.hH}</div><div class="kpi-sub">${HL}–${HH} hrs per report</div></div>
+    <div class="kpi hot"><div class="kpi-label">FTE Months</div><div class="kpi-val">${s.fL}–${s.fH}</div><div class="kpi-sub">@ 160 hrs/month</div></div>
+    <div class="kpi"><div class="kpi-label">Active Folders</div><div class="kpi-val">660</div><div class="kpi-sub">97.3% active</div></div>`;
+
+  // KPIs Tab 1
+  document.getElementById('kpiRow1').innerHTML=`
+    <div class="kpi hot"><div class="kpi-label">High Priority</div><div class="kpi-val">${s.hi}</div><div class="kpi-sub">${s.hi*HH} hrs</div></div>
+    <div class="kpi"><div class="kpi-label">Medium Priority</div><div class="kpi-val">${s.me}</div><div class="kpi-sub">${s.me*HH} hrs</div></div>
+    <div class="kpi"><div class="kpi-label">Low Priority</div><div class="kpi-val">${s.lo}</div><div class="kpi-sub">${s.lo*HH} hrs</div></div>
+    <div class="kpi hot"><div class="kpi-label">Total Selected</div><div class="kpi-val">${s.n}</div><div class="kpi-sub">${hf?'Filtered':'All CR objects'}</div></div>`;
+
+  // Effort table
+  const rows=[
+    {l:"Total CR Objects",v:s.n,c:"var(--amber)"},{l:"Avg Hours Per Report",v:`${HL}–${HH} hrs`,c:"var(--blue)"},
+    {l:"Total Conversion Hours",v:`${s.hL}–${s.hH} hrs`,c:"var(--red)"},{l:"Working Hours/Month",v:"160 hrs",c:"var(--muted)"},
+    {l:"Base FTE Months",v:`${s.fL}–${s.fH}`,c:"var(--amber)"},{l:"+ QA & Testing Buffer (2×)",v:`${(s.fL*2).toFixed(1)}–${(s.fH*2).toFixed(1)}`,c:"var(--red)",hl:true}
+  ];
+  document.getElementById('effortTable').innerHTML=rows.map(r=>
+    `<div class="effort-row${r.hl?' highlight':''}"><span class="effort-label">${r.l}</span><span class="effort-val" style="color:${r.c}">${r.v}</span></div>`
+  ).join('')+`<div class="recommend"><div class="recommend-label">Recommended Engagement</div><div class="recommend-val">1 FTE × 6–12 Months</div></div>`;
+
+  // Phase cards
+  const phases=[{q:"2026-Q1",p:"High",col:"var(--red)"},{q:"2026-Q2",p:"Medium",col:"var(--amber)"},{q:"2026-Q3",p:"Low",col:"var(--green)"}];
+  document.getElementById('phaseCards').innerHTML=phases.map(ph=>{
+    const reps=RAW.filter(r=>r.p===ph.p).length;
+    const isSel=selPriority===ph.p;
+    return `<div class="phase-card" style="background:${isSel?'rgba(255,255,255,.05)':'rgba(255,255,255,.02)'};border:1px solid ${isSel?ph.col:'rgba(255,255,255,.06)'}" onclick="selPriority=selPriority==='${ph.p}'?null:'${ph.p}';render()">
+      <div class="phase-q" style="color:${ph.col}">${ph.q}</div>
+      <div class="phase-num">${reps}</div>
+      <div class="phase-sub">reports · ${reps*HH} hrs</div>
+      <div class="phase-badge" style="color:${ph.col};background:rgba(255,255,255,.05)">${ph.p} Priority</div>
+    </div>`;
+  }).join('');
+
+  // Detail table
+  document.getElementById('detailTitle').textContent=`CR Report Detail — ${f.length} of ${RAW.length} records`;
+  document.getElementById('detailSub').textContent=hf?'Showing filtered results':'All CR objects';
+  document.getElementById('detailBody').innerHTML=f.map(r=>
+    `<tr><td style="color:var(--text);font-weight:600">${r.n}</td><td style="color:var(--muted)">${r.a}</td><td><span class="badge badge-${r.p.toLowerCase()}">${r.p}</span></td><td style="color:var(--amber);font-weight:700">${HL}–${HH}</td></tr>`
+  ).join('');
+
+  // ─── CHARTS ───
+  renderCharts(s);
 }
 
-function Card({title,sub,children,clickHint}){
-  return h("div",{style:{background:C.card,border:"1px solid "+C.border,borderRadius:10,padding:"18px 20px"}},
-    h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",marginBottom:14}},
-      h("div",null,
-        h("div",{style:{fontSize:14,fontWeight:700,color:C.text}},title),
-        sub&&h("div",{style:{fontSize:11,color:C.dim,marginTop:2,fontFamily:jm}},sub)
-      ),
-      clickHint&&h("div",{style:{fontSize:10,color:C.amber,fontFamily:jm,opacity:.7,padding:"3px 8px",background:C.amber+"10",borderRadius:4}},"Click to highlight & filter")
-    ),
-    children
-  );
+function renderCharts(s){
+  Object.values(charts).forEach(c=>{if(c)c.destroy()});
+  charts={};
+
+  if(currentTab===0||currentTab===1){
+    // Priority bar (horizontal)
+    const prioData=[
+      {label:"High",count:RAW.filter(r=>r.p==="High").length},
+      {label:"Medium",count:RAW.filter(r=>r.p==="Medium").length},
+      {label:"Low",count:RAW.filter(r=>r.p==="Low").length}
+    ];
+    if(document.getElementById('chart_prio')){
+      charts.prio=new Chart(document.getElementById('chart_prio'),{type:'bar',
+        data:{labels:prioData.map(d=>d.label),datasets:[{data:prioData.map(d=>d.count),
+          backgroundColor:prioData.map(d=>selPriority&&selPriority!==d.label?PCOL_DIM[d.label]:PCOL[d.label]),
+          borderColor:prioData.map(d=>selPriority===d.label?'#fff':'transparent'),borderWidth:prioData.map(d=>selPriority===d.label?2:0),
+          borderRadius:5,barThickness:28}]},
+        options:{indexAxis:'y',scales:{x:{grid:{display:false},ticks:{color:'#475569'}},y:{grid:{display:false},ticks:{font:{weight:'600'}}}},
+          onClick(e,el){if(el.length){const l=prioData[el[0].index].label;selPriority=selPriority===l?null:l;render()}}}
+      });
+    }
+
+    // Quarter bar
+    const qData=[
+      {label:"2026-Q1",hours:s.hi*HH,color:'#ef4444'},{label:"2026-Q2",hours:s.me*HH,color:'#f59e0b'},{label:"2026-Q3",hours:s.lo*HH,color:'#10b981'}
+    ].filter(d=>d.hours>0);
+    if(document.getElementById('chart_quarter')){
+      charts.quarter=new Chart(document.getElementById('chart_quarter'),{type:'bar',
+        data:{labels:qData.map(d=>d.label),datasets:[{data:qData.map(d=>d.hours),backgroundColor:qData.map(d=>d.color),borderRadius:5,barThickness:44,label:'Est. Hours'}]},
+        options:{scales:{x:{grid:{display:false}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
+      });
+    }
+
+    // Area bar (horizontal)
+    const aData=byArea();
+    const makeAreaChart=(id)=>{
+      if(!document.getElementById(id))return null;
+      return new Chart(document.getElementById(id),{type:'bar',
+        data:{labels:aData.map(d=>d[0]),datasets:[{data:aData.map(d=>id==='chart_area'?d[1]*HH:d[1]),
+          backgroundColor:aData.map(d=>selArea&&selArea!==d[0]?'rgba(245,158,11,.13)':'#f59e0b'),
+          borderColor:aData.map(d=>selArea===d[0]?'#fff':'transparent'),borderWidth:aData.map(d=>selArea===d[0]?2:0),
+          borderRadius:5,barThickness:18,label:id==='chart_area'?'Est. Hours':'CR Reports'}]},
+        options:{indexAxis:id==='chart_area'?'y':'x',
+          scales:{x:{grid:{display:id==='chart_area'},ticks:{color:'#475569',maxRotation:id==='chart_area2'?30:0}},y:{grid:{display:id!=='chart_area'},ticks:{color:'#94a3b8',font:{size:10}}}},
+          onClick(e,el){if(el.length){const l=aData[el[0].index][0];selArea=selArea===l?null:l;render()}}}
+      });
+    };
+    charts.area=makeAreaChart('chart_area');
+    charts.area2=makeAreaChart('chart_area2');
+
+    // Pie
+    if(document.getElementById('chart_pie')){
+      const pieD=[
+        {label:"High",count:RAW.filter(r=>r.p==="High").length,color:'#ef4444'},
+        {label:"Medium",count:RAW.filter(r=>r.p==="Medium").length,color:'#f59e0b'},
+        {label:"Low",count:RAW.filter(r=>r.p==="Low").length,color:'#10b981'}
+      ];
+      charts.pie=new Chart(document.getElementById('chart_pie'),{type:'doughnut',
+        data:{labels:pieD.map(d=>d.label+' ('+d.count+')'),datasets:[{data:pieD.map(d=>d.count),
+          backgroundColor:pieD.map(d=>selPriority&&selPriority!==d.label?d.color+'22':d.color),
+          borderColor:pieD.map(d=>selPriority===d.label?'#fff':'#0d1321'),borderWidth:pieD.map(d=>selPriority===d.label?3:2),
+          hoverOffset:8}]},
+        options:{cutout:'55%',plugins:{legend:{display:true,position:'bottom',labels:{padding:14,usePointStyle:true,pointStyle:'circle',color:'#94a3b8',font:{size:11,family:"'JetBrains Mono',monospace"}}}},
+          onClick(e,el){if(el.length){const l=pieD[el[0].index].label;selPriority=selPriority===l?null:l;render()}}}
+      });
+    }
+  }
+
+  if(currentTab===2){
+    // Types
+    const types=[{n:"Date Archive",c:266},{n:"Dept/Functional",c:130},{n:"CR Object",c:57},{n:"WebI Cache",c:28},{n:"Pathlore",c:22},{n:"Finance",c:20},{n:"Inactive",c:18},{n:"BI Admin",c:17},{n:"Dashboard",c:16},{n:"Other",c:104}];
+    const tCols=["#f59e0b","#3b82f6","#ef4444","#10b981","#a78bfa","#ec4899","#06b6d4","#f97316","#84cc16","#e879f9"];
+    charts.types=new Chart(document.getElementById('chart_types'),{type:'bar',
+      data:{labels:types.map(d=>d.n),datasets:[{data:types.map(d=>d.c),backgroundColor:tCols,borderRadius:5,barThickness:18}]},
+      options:{indexAxis:'y',scales:{x:{grid:{display:false},ticks:{color:'#475569'}},y:{grid:{display:false},ticks:{font:{size:10}}}}}
+    });
+
+    // Depth
+    const depths=[{d:"Level 1",c:33},{d:"Level 2",c:119},{d:"Level 3",c:246},{d:"Level 4",c:196},{d:"Level 5",c:75},{d:"Level 6",c:9}];
+    charts.depth=new Chart(document.getElementById('chart_depth'),{type:'bar',
+      data:{labels:depths.map(d=>d.d),datasets:[{data:depths.map(d=>d.c),backgroundColor:'#3b82f6',borderRadius:5,barThickness:40}]},
+      options:{scales:{x:{grid:{display:false}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
+    });
+
+    // Timeline
+    charts.timeline=new Chart(document.getElementById('chart_timeline'),{type:'line',
+      data:{labels:TL.map(d=>d.q),datasets:[{data:TL.map(d=>d.c),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.1)',
+        fill:true,tension:.3,pointRadius:2,pointBackgroundColor:'#f59e0b',pointHoverRadius:5}]},
+      options:{scales:{x:{grid:{display:false},ticks:{color:'#475569',maxRotation:45,font:{size:8},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
+    });
+  }
 }
 
-function Tip({active,payload,label}){
-  if(!active||!payload||!payload.length)return null;
-  return h("div",{style:{background:"#1e293b",border:"1px solid "+C.border,borderRadius:6,padding:"8px 12px",boxShadow:"0 8px 32px rgba(0,0,0,.6)"}},
-    h("div",{style:{fontSize:11,fontWeight:700,color:C.text,marginBottom:3}},label),
-    ...payload.map((p,i)=>h("div",{key:i,style:{fontSize:11,color:C.muted}},p.name+": ",h("span",{style:{fontWeight:700,color:p.color||C.text}},p.value)))
-  );
-}
+// ─── TABS ───
+document.querySelectorAll('.tab').forEach(btn=>{
+  btn.addEventListener('click',function(){
+    currentTab=parseInt(this.dataset.tab);
+    document.querySelectorAll('.tab').forEach(b=>b.classList.remove('active'));
+    this.classList.add('active');
+    document.getElementById('tab0').classList.toggle('hidden',currentTab!==0);
+    document.getElementById('tab1').classList.toggle('hidden',currentTab!==1);
+    document.getElementById('tab2').classList.toggle('hidden',currentTab!==2);
+    selArea=null;selPriority=null;
+    render();
+  });
+});
 
-function App(){
-  const[tab,setTab]=useState(0);
-  const[selA,setSA]=useState(null);
-  const[selP,setSP]=useState(null);
+function clearAll(){selArea=null;selPriority=null;render()}
 
-  const filt=useMemo(()=>{let d=RAW;if(selA)d=d.filter(r=>r.area===selA);if(selP)d=d.filter(r=>r.p===selP);return d},[selA,selP]);
-  const st=useMemo(()=>{const n=filt.length;return{n,hL:n*HL,hH:n*HH,fL:(n*HL/160).toFixed(1),fH:(n*HH/160).toFixed(1),hi:filt.filter(r=>r.p==="High").length,me:filt.filter(r=>r.p==="Medium").length,lo:filt.filter(r=>r.p==="Low").length}},[filt]);
-
-  const bA=useMemo(()=>{const m={};RAW.forEach(r=>{m[r.area]=(m[r.area]||0)+1});return Object.entries(m).sort((a,b)=>b[1]-a[1]).map(([name,count])=>({name,count,hours:count*HH}))},[]);
-  const bP=useMemo(()=>[{name:"High",count:RAW.filter(r=>r.p==="High").length,fill:C.red},{name:"Medium",count:RAW.filter(r=>r.p==="Medium").length,fill:C.amber},{name:"Low",count:RAW.filter(r=>r.p==="Low").length,fill:C.green}],[]);
-  const bQ=useMemo(()=>[{quarter:"2026-Q1",reports:st.hi,hours:st.hi*HH,label:"High Priority",color:C.red},{quarter:"2026-Q2",reports:st.me,hours:st.me*HH,label:"Medium Priority",color:C.amber},{quarter:"2026-Q3",reports:st.lo,hours:st.lo*HH,label:"Low Priority",color:C.green}].filter(d=>d.reports>0),[st]);
-
-  const hf=selA||selP;
-  const clr=useCallback(()=>{setSA(null);setSP(null)},[]);
-  const cA=useCallback(d=>{if(d?.activePayload?.[0]){const n=d.activePayload[0].payload.name;setSA(p=>p===n?null:n)}},[]);
-  const cP=useCallback(d=>{if(d?.activePayload?.[0]){const n=d.activePayload[0].payload.name;setSP(p=>p===n?null:n)}},[]);
-  const cPie=useCallback((_,i)=>{const n=bP[i]?.name;if(n)setSP(p=>p===n?null:n)},[bP]);
-
-  const af=n=>!selA?C.amber:n===selA?C.amber:C.amber+"22";
-  const ax=n=>selA===n?"#fff":"none";
-  const aw=n=>selA===n?2.5:0;
-  const pf=e=>!selP?e.fill:e.name===selP?e.fill:e.fill+"22";
-  const px=n=>selP===n?"#fff":"none";
-  const pw=n=>selP===n?2.5:0;
-  const pc=n=>n==="High"?C.red:n==="Medium"?C.amber:C.green;
-
-  const tabs=["Executive Summary","Conversion Scope","Platform Analysis"];
-
-  return h("div",{style:{minHeight:"100vh",background:C.bg,color:C.text,fontFamily:"'Space Grotesk',-apple-system,sans-serif",padding:"0 0 32px"}},
-
-    // HEADER
-    h("div",{style:{background:"linear-gradient(135deg,"+C.card+" 0%,#0f172a 50%,"+C.amberDim+"20 100%)",borderBottom:"1px solid "+C.border,padding:"24px 28px 16px"}},
-      h("div",{style:{display:"flex",justifyContent:"space-between",alignItems:"flex-start",flexWrap:"wrap",gap:14}},
-        h("div",null,
-          h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:3,color:C.amber,marginBottom:5,fontFamily:jm}},"SAP BusinessObjects BI Platform · 4.3 SP3"),
-          h("h1",{style:{fontSize:24,fontWeight:800,margin:0,lineHeight:1.2,color:C.text}},"Crystal Reports for Enterprise → CR 2020 Conversion"),
-          h("div",{style:{fontSize:13,color:C.muted,marginTop:4}},"Scope Assessment · BI 2025/2027 Compatibility")
-        ),
-        h("div",{style:{background:C.red+"14",border:"1px solid "+C.red+"35",borderRadius:8,padding:"10px 16px",textAlign:"right"}},
-          h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:1.5,color:C.red,fontFamily:jm}},"Resource Required"),
-          h("div",{style:{fontSize:22,fontWeight:800,color:C.red}},"6–12 Months"),
-          h("div",{style:{fontSize:10,color:C.dim}},"Dedicated FTE")
-        )
-      ),
-      h("div",{style:{display:"flex",gap:4,marginTop:16}},
-        ...tabs.map((t,i)=>h("button",{key:i,onClick:()=>{setTab(i);clr()},style:{background:tab===i?C.amber:"transparent",color:tab===i?C.bg:C.muted,border:"1px solid "+(tab===i?C.amber:C.border),borderRadius:5,padding:"6px 16px",fontSize:12,fontWeight:600,cursor:"pointer",fontFamily:"'Space Grotesk',sans-serif"}},t))
-      )
-    ),
-
-    // FILTER BAR
-    tab<2&&h("div",{style:{padding:"12px 28px",borderBottom:"1px solid "+C.border,display:"flex",alignItems:"center",gap:10,minHeight:44,background:C.card+"80"}},
-      h("span",{style:{fontSize:11,color:C.dim,fontFamily:jm,textTransform:"uppercase",letterSpacing:1}},"Filters:"),
-      !hf&&h("span",{style:{fontSize:12,color:C.dim,fontStyle:"italic"}},"None — click any chart element to filter"),
-      selA&&h(Pill,{label:"Area",value:selA,onClear:()=>setSA(null)}),
-      selP&&h(Pill,{label:"Priority",value:selP,onClear:()=>setSP(null)}),
-      hf&&h("button",{onClick:clr,style:{background:C.red+"20",border:"1px solid "+C.red+"40",borderRadius:5,padding:"4px 12px",fontSize:11,color:C.red,cursor:"pointer",fontWeight:600,fontFamily:jm,marginLeft:"auto"}},"Clear All ×")
-    ),
-
-    h("div",{style:{padding:"20px 28px",maxWidth:1440,margin:"0 auto"}},
-
-      // TAB 0
-      tab===0&&h("div",null,
-        h("div",{style:{display:"grid",gridTemplateColumns:"repeat(auto-fit,minmax(170px,1fr))",gap:12,marginBottom:20}},
-          h(KPI,{label:"Total BI Folders",value:678,sub:"Entire platform"}),
-          h(KPI,{label:"CR Objects",value:st.n,sub:hf?"Filtered":"Requiring conversion",hot:true}),
-          h(KPI,{label:"Est. Hours",value:st.hL+"–"+st.hH,sub:HL+"–"+HH+" hrs per report",hot:true}),
-          h(KPI,{label:"FTE Months",value:st.fL+"–"+st.fH,sub:"@ 160 hrs/month",hot:true}),
-          h(KPI,{label:"Active Folders",value:660,sub:"97.3% active"})
-        ),
-
-        h("div",{style:{background:"linear-gradient(90deg,"+C.redDim+"50,"+C.amberDim+"30)",border:"1px solid "+C.red+"25",borderRadius:8,padding:"14px 20px",marginBottom:20,display:"flex",alignItems:"center",gap:14}},
-          h("div",{style:{fontSize:32}},"⚠"),
-          h("div",null,
-            h("div",{style:{fontWeight:700,fontSize:14,marginBottom:3}},"CRE is incompatible with SAP BI 2025/2027"),
-            h("div",{style:{fontSize:12,color:C.muted}},"All "+RAW.length+" Crystal Report objects must be converted to CR 2020. At "+HL+"–"+HH+" hours per report, this is "+RAW.length*HL+"–"+RAW.length*HH+" total hours — justifying a dedicated FTE for 6–12 months including QA.")
-          )
-        ),
-
-        h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}},
-          h(Card,{title:"CR Reports by Priority",sub:"Click to highlight — KPIs update",clickHint:true},
-            h(ResponsiveContainer,{width:"100%",height:220},
-              h(BarChart,{data:bP,layout:"vertical",margin:{left:8,right:16},onClick:cP,style:{cursor:"pointer"}},
-                h(CartesianGrid,{strokeDasharray:"3 3",stroke:C.grid,horizontal:false}),
-                h(XAxis,{type:"number",tick:{fill:C.dim,fontSize:10},axisLine:false}),
-                h(YAxis,{type:"category",dataKey:"name",tick:{fill:C.muted,fontSize:11,fontWeight:600},axisLine:false,width:62}),
-                h(Tooltip,{content:h(Tip)}),
-                h(Bar,{dataKey:"count",name:"Reports",radius:[0,5,5,0],barSize:28,style:{cursor:"pointer"}},
-                  ...bP.map((e,i)=>h(Cell,{key:i,fill:pf(e),stroke:px(e.name),strokeWidth:pw(e.name)}))
-                )
-              )
-            )
-          ),
-          h(Card,{title:"Conversion Workload by Planned Quarter",sub:"Reflects active filters"},
-            h(ResponsiveContainer,{width:"100%",height:220},
-              h(BarChart,{data:bQ,margin:{left:0,right:10}},
-                h(CartesianGrid,{strokeDasharray:"3 3",stroke:C.grid,vertical:false}),
-                h(XAxis,{dataKey:"quarter",tick:{fill:C.muted,fontSize:11},axisLine:false}),
-                h(YAxis,{tick:{fill:C.dim,fontSize:10},axisLine:false}),
-                h(Tooltip,{content:h(Tip)}),
-                h(Bar,{dataKey:"hours",name:"Est. Hours",radius:[5,5,0,0],barSize:44},
-                  ...bQ.map((e,i)=>h(Cell,{key:i,fill:e.color}))
-                )
-              )
-            )
-          )
-        ),
-
-        h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14}},
-          h(Card,{title:"Conversion Hours by Functional Area",sub:"Click to highlight — KPIs update",clickHint:true},
-            h(ResponsiveContainer,{width:"100%",height:280},
-              h(BarChart,{data:bA,layout:"vertical",margin:{left:16,right:16},onClick:cA,style:{cursor:"pointer"}},
-                h(CartesianGrid,{strokeDasharray:"3 3",stroke:C.grid,horizontal:false}),
-                h(XAxis,{type:"number",tick:{fill:C.dim,fontSize:10},axisLine:false}),
-                h(YAxis,{type:"category",dataKey:"name",tick:{fill:C.muted,fontSize:10},axisLine:false,width:100}),
-                h(Tooltip,{content:h(Tip)}),
-                h(Bar,{dataKey:"hours",name:"Est. Hours",radius:[0,5,5,0],barSize:18,style:{cursor:"pointer"}},
-                  ...bA.map((e,i)=>h(Cell,{key:i,fill:af(e.name),stroke:ax(e.name),strokeWidth:aw(e.name)}))
-                )
-              )
-            )
-          ),
-          h(Card,{title:"Effort Justification",sub:"Resource calculation breakdown"},
-            h("div",{style:{padding:"4px 0"}},
-              ...[
-                {l:"Total CR Objects",v:String(st.n),c:C.amber},
-                {l:"Avg Hours Per Report",v:HL+"–"+HH+" hrs",c:C.blue},
-                {l:"Total Conversion Hours",v:st.hL+"–"+st.hH+" hrs",c:C.red},
-                {l:"Working Hours/Month",v:"160 hrs",c:C.muted},
-                {l:"Base FTE Months",v:st.fL+"–"+st.fH,c:C.amber},
-                {l:"+ QA & Testing Buffer (2×)",v:(st.fL*2).toFixed(1)+"–"+(st.fH*2).toFixed(1),c:C.red}
-              ].map((r,i)=>h("div",{key:i,style:{display:"flex",justifyContent:"space-between",alignItems:"center",padding:"10px 14px",borderBottom:i<5?"1px solid "+C.grid:"none",background:i===5?C.red+"0c":"transparent",borderRadius:i===5?6:0}},
-                h("span",{style:{fontSize:12,color:C.muted}},r.l),
-                h("span",{style:{fontSize:14,fontWeight:700,color:r.c,fontFamily:jm}},r.v)
-              )),
-              h("div",{style:{marginTop:14,padding:"12px 14px",background:C.amber+"0f",border:"1px solid "+C.amber+"25",borderRadius:8,textAlign:"center"}},
-                h("div",{style:{fontSize:10,color:C.amber,textTransform:"uppercase",letterSpacing:1.5,fontFamily:jm}},"Recommended Engagement"),
-                h("div",{style:{fontSize:20,fontWeight:800,color:C.amber,marginTop:3}},"1 FTE × 6–12 Months")
-              )
-            )
-          )
-        )
-      ),
-
-      // TAB 1
-      tab===1&&h("div",null,
-        h("div",{style:{display:"grid",gridTemplateColumns:"repeat(4,1fr)",gap:12,marginBottom:20}},
-          h(KPI,{label:"High Priority",value:st.hi,sub:st.hi*HH+" hrs",hot:true}),
-          h(KPI,{label:"Medium Priority",value:st.me,sub:st.me*HH+" hrs"}),
-          h(KPI,{label:"Low Priority",value:st.lo,sub:st.lo*HH+" hrs"}),
-          h(KPI,{label:"Total Selected",value:st.n,sub:hf?"Filtered":"All CR objects",hot:true})
-        ),
-
-        h("div",{style:{display:"grid",gridTemplateColumns:"1.2fr .8fr",gap:14,marginBottom:14}},
-          h(Card,{title:"CR Reports by Functional Area",sub:"Click bars to highlight & cross-filter",clickHint:true},
-            h(ResponsiveContainer,{width:"100%",height:320},
-              h(BarChart,{data:bA,margin:{left:10,right:16},onClick:cA,style:{cursor:"pointer"}},
-                h(CartesianGrid,{strokeDasharray:"3 3",stroke:C.grid,vertical:false}),
-                h(XAxis,{dataKey:"name",tick:{fill:C.muted,fontSize:9,angle:-30},axisLine:false,height:55,interval:0,textAnchor:"end"}),
-                h(YAxis,{tick:{fill:C.dim,fontSize:10},axisLine:false}),
-                h(Tooltip,{content:h(Tip)}),
-                h(Bar,{dataKey:"count",name:"CR Reports",radius:[4,4,0,0],barSize:30,style:{cursor:"pointer"}},
-                  ...bA.map((e,i)=>h(Cell,{key:i,fill:af(e.name),stroke:ax(e.name),strokeWidth:aw(e.name)}))
-                )
-              )
-            )
-          ),
-          h(Card,{title:"Priority Distribution",sub:"Click slices to highlight & filter"},
-            h(ResponsiveContainer,{width:"100%",height:320},
-              h(PieChart,null,
-                h(Pie,{data:bP,cx:"50%",cy:"50%",innerRadius:55,outerRadius:95,dataKey:"count",onClick:cPie,style:{cursor:"pointer"},
-                  label:props=>{
-                    if(props.percent<0.04)return null;
-                    const R=Math.PI/180,r=props.outerRadius+24;
-                    return h("text",{x:props.cx+r*Math.cos(-props.midAngle*R),y:props.cy+r*Math.sin(-props.midAngle*R),fill:C.muted,textAnchor:props.cx+r*Math.cos(-props.midAngle*R)>props.cx?"start":"end",fontSize:11,fontFamily:jm},props.name+" ("+props.value+")");
-                  },labelLine:{stroke:C.dim,strokeWidth:1}},
-                  ...bP.map((e,i)=>h(Cell,{key:i,fill:pf(e),stroke:px(e.name),strokeWidth:pw(e.name),style:{cursor:"pointer"}}))
-                ),
-                h(Tooltip,{content:h(Tip)})
-              )
-            )
-          )
-        ),
-
-        h(Card,{title:"Conversion Timeline & Phasing",sub:"Click a phase card to filter by priority"},
-          h("div",{style:{display:"grid",gridTemplateColumns:"repeat(3,1fr)",gap:14,marginTop:6}},
-            ...[{q:"2026-Q1",p:"High",color:C.red},{q:"2026-Q2",p:"Medium",color:C.amber},{q:"2026-Q3",p:"Low",color:C.green}].map((q,i)=>{
-              const reps=RAW.filter(r=>r.p===q.p).length;
-              const isSel=selP===q.p;
-              return h("div",{key:i,onClick:()=>setSP(p=>p===q.p?null:q.p),style:{background:isSel?q.color+"18":q.color+"08",border:"1px solid "+(isSel?q.color:q.color+"25"),borderRadius:8,padding:18,textAlign:"center",cursor:"pointer",transition:"all .15s"}},
-                h("div",{style:{fontSize:10,textTransform:"uppercase",letterSpacing:1.5,color:q.color,fontFamily:jm}},q.q),
-                h("div",{style:{fontSize:34,fontWeight:800,color:C.text,marginTop:6}},reps),
-                h("div",{style:{fontSize:11,color:C.muted}},"reports · "+reps*HH+" hrs"),
-                h("div",{style:{marginTop:8,fontSize:10,fontWeight:600,color:q.color,background:q.color+"18",borderRadius:4,padding:"3px 10px",display:"inline-block"}},q.p+" Priority")
-              );
-            })
-          )
-        ),
-
-        h("div",{style:{marginTop:14}},
-          h(Card,{title:"CR Report Detail — "+filt.length+" of "+RAW.length+" records",sub:hf?"Showing filtered results":"All CR objects"},
-            h("div",{style:{maxHeight:300,overflowY:"auto",marginTop:4}},
-              h("table",{style:{width:"100%",borderCollapse:"collapse",fontSize:11,fontFamily:jm}},
-                h("thead",null,h("tr",{style:{position:"sticky",top:0,background:C.card,zIndex:1}},
-                  ...["Report","Functional Area","Priority","Est. Hours"].map(x=>h("th",{key:x,style:{textAlign:"left",padding:"8px 10px",borderBottom:"1px solid "+C.border,color:C.muted,fontWeight:600,fontSize:10,textTransform:"uppercase",letterSpacing:1}},x))
-                )),
-                h("tbody",null,...filt.map(r=>
-                  h("tr",{key:r.id,style:{borderBottom:"1px solid "+C.grid}},
-                    h("td",{style:{padding:"7px 10px",color:C.text,fontWeight:600}},r.name),
-                    h("td",{style:{padding:"7px 10px",color:C.muted}},r.area),
-                    h("td",{style:{padding:"7px 10px"}},h("span",{style:{fontSize:10,fontWeight:700,padding:"2px 8px",borderRadius:3,color:pc(r.p),background:pc(r.p)+"18"}},r.p)),
-                    h("td",{style:{padding:"7px 10px",color:C.amber,fontWeight:700}},HL+"–"+HH)
-                  )
-                ))
-              )
-            )
-          )
-        )
-      ),
-
-      // TAB 2
-      tab===2&&h("div",null,
-        h("div",{style:{display:"grid",gridTemplateColumns:"repeat(5,1fr)",gap:12,marginBottom:20}},
-          h(KPI,{label:"Total Folders",value:678}),h(KPI,{label:"Active",value:660,sub:"97.3%"}),h(KPI,{label:"Date Archives",value:266,sub:"39.2%"}),h(KPI,{label:"System/Cache",value:7}),h(KPI,{label:"Max Depth",value:6,sub:"Nesting levels"})
-        ),
-        h("div",{style:{display:"grid",gridTemplateColumns:"1fr 1fr",gap:14,marginBottom:14}},
-          h(Card,{title:"Folder Type Distribution"},
-            h(ResponsiveContainer,{width:"100%",height:300},
-              h(BarChart,{data:[{n:"Date Archive",c:266},{n:"Dept/Functional",c:130},{n:"CR Object",c:57},{n:"WebI Cache",c:28},{n:"Pathlore",c:22},{n:"Finance",c:20},{n:"Inactive",c:18},{n:"BI Admin",c:17},{n:"Dashboard",c:16},{n:"Other",c:104}],layout:"vertical",margin:{left:20,right:16}},
-                h(CartesianGrid,{strokeDasharray:"3 3",stroke:C.grid,horizontal:false}),
-                h(XAxis,{type:"number",tick:{fill:C.dim,fontSize:10},axisLine:false}),
-                h(YAxis,{type:"category",dataKey:"n",tick:{fill:C.muted,fontSize:10},axisLine:false,width:110}),
-                h(Tooltip,{content:h(Tip)}),
-                h(Bar,{dataKey:"c",name:"Folders",radius:[0,5,5,0],barSize:18},
-                  ...[0,1,2,3,4,5,6,7,8,9].map(i=>h(Cell,{key:i,fill:PAL[i]}))
-                )
-              )
-            )
-          ),
-          h(Card,{title:"Hierarchy Depth Distribution"},
-            h(ResponsiveContainer,{width:"100%",height:300},
-              h(BarChart,{data:[{d:"Level 1",c:33},{d:"Level 2",c:119},{d:"Level 3",c:246},{d:"Level 4",c:196},{d:"Level 5",c:75},{d:"Level 6",c:9}],margin:{left:0,right:10}},
-                h(CartesianGrid,{strokeDasharray:"3 3",stroke:C.grid,vertical:false}),
-                h(XAxis,{dataKey:"d",tick:{fill:C.muted,fontSize:11},axisLine:false}),
-                h(YAxis,{tick:{fill:C.dim,fontSize:10},axisLine:false}),
-                h(Tooltip,{content:h(Tip)}),
-                h(Bar,{dataKey:"c",name:"Folders",fill:C.blue,radius:[5,5,0,0],barSize:40})
-              )
-            )
-          )
-        ),
-        h(Card,{title:"BI Platform Activity Timeline",sub:"Date-based archive/LCM promotion folders — sustained usage 2015–2026"},
-          h(ResponsiveContainer,{width:"100%",height:250},
-            h(LineChart,{data:TL,margin:{left:0,right:10,top:5}},
-              h(CartesianGrid,{strokeDasharray:"3 3",stroke:C.grid}),
-              h(XAxis,{dataKey:"yq",tick:{fill:C.dim,fontSize:8,angle:-45},axisLine:false,height:45,interval:3,textAnchor:"end"}),
-              h(YAxis,{tick:{fill:C.dim,fontSize:10},axisLine:false}),
-              h(Tooltip,{content:h(Tip)}),
-              h(Line,{type:"monotone",dataKey:"c",name:"Archive Folders",stroke:C.amber,strokeWidth:2.5,dot:{fill:C.amber,r:2.5},activeDot:{r:5,fill:C.amber}})
-            )
-          )
-        )
-      )
-    ),
-
-    h("div",{style:{textAlign:"center",padding:"16px 28px",borderTop:"1px solid "+C.border,marginTop:20,fontSize:10,color:C.dim,fontFamily:jm}},
-      "Source: SAP BI Platform Query Builder · 678 InfoObjects · "+new Date().toLocaleDateString()+" · Maven BI Group"
-    )
-  );
-}
-
-createRoot(document.getElementById("root")).render(h(App));
+document.getElementById('footerDate').textContent=new Date().toLocaleDateString();
+render();
 </script>
 </body>
 </html>
