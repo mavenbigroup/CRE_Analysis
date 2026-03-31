@@ -111,7 +111,7 @@ canvas{max-width:100%}
     <div class="grid g5 mb20" id="kpiRow0"></div>
     <div class="warn mb20">
       <div class="warn-icon">⚠</div>
-      <div><div class="warn-title">CRE is incompatible with SAP BI 2025/2027</div><div class="warn-text">All 63 Crystal Report objects must be converted to CR 2020. At 5–10 hours per report, this is 315–630 total hours — justifying a dedicated FTE for 6–12 months including QA.</div></div>
+      <div><div class="warn-title">CRE is incompatible with SAP BI 2025/2027</div><div class="warn-text">All 63 Crystal Report objects must be converted to CR 2020. At 13–25 hours per report, this is 819–1,575 total hours — justifying a dedicated FTE for 6–12 months including QA.</div></div>
     </div>
     <div class="grid g2 mb14">
       <div class="card"><div class="card-head"><div><div class="card-title">CR Reports by Priority</div><div class="card-sub">Click to highlight — KPIs update</div></div><div class="click-hint">Click to highlight & filter</div></div><canvas id="c_prio"></canvas></div>
@@ -152,7 +152,7 @@ canvas{max-width:100%}
 <div class="footer">Source: SAP BI Platform Query Builder · 678 InfoObjects · <span id="footerDate"></span> · Maven BI Group</div>
 
 <script>
-var HL=5,HH=10;
+var HL=13,HH=25;
 var RAW=[
 {id:1,n:"CR6135",a:"Finance",p:"High"},{id:2,n:"CR5867",a:"Finance",p:"High"},{id:3,n:"CR6902",a:"Finance",p:"High"},{id:4,n:"CR6905",a:"Finance",p:"High"},{id:5,n:"CR8123",a:"Finance",p:"High"},{id:6,n:"CR8124",a:"Finance",p:"High"},{id:7,n:"CR8125",a:"Finance",p:"High"},{id:8,n:"CR8126",a:"Finance",p:"High"},{id:9,n:"CR8127",a:"Finance",p:"High"},{id:10,n:"CR6604",a:"Finance",p:"High"},{id:11,n:"CR8205",a:"Finance",p:"High"},{id:12,n:"CR7877",a:"Finance",p:"High"},{id:13,n:"CR5694",a:"Finance",p:"High"},{id:14,n:"CR6354",a:"Finance",p:"High"},{id:15,n:"CR7402",a:"Finance",p:"High"},{id:16,n:"CR7535",a:"Finance",p:"High"},{id:17,n:"CR7557",a:"Finance",p:"High"},{id:18,n:"CR7628",a:"Finance",p:"High"},{id:19,n:"CR7682",a:"Finance",p:"High"},{id:20,n:"CR8004",a:"Finance",p:"High"},{id:21,n:"CR4687",a:"GM Reports",p:"High"},{id:22,n:"CR5633",a:"GM Reports",p:"High"},{id:23,n:"CR7083",a:"GM Reports",p:"High"},{id:24,n:"CR6909",a:"GM Reports",p:"High"},{id:25,n:"CR4798",a:"Finance",p:"High"},{id:26,n:"CR4723",a:"Finance",p:"High"},{id:27,n:"CR4812",a:"Finance",p:"High"},{id:28,n:"CR5224",a:"Finance",p:"High"},{id:29,n:"CR7319",a:"Finance",p:"High"},{id:30,n:"CR7929",a:"Finance",p:"High"},{id:31,n:"CR8137",a:"Finance",p:"High"},{id:32,n:"CR8257",a:"Finance",p:"High"},{id:33,n:"CR8473",a:"Finance",p:"High"},{id:34,n:"CR8639",a:"Finance",p:"High"},{id:35,n:"CR8834",a:"Finance",p:"High"},{id:36,n:"CR8866",a:"Finance",p:"High"},{id:37,n:"CR8911",a:"Finance",p:"High"},{id:38,n:"CR9038",a:"Grants Mgmt",p:"High"},{id:39,n:"CR8457",a:"Grants Mgmt",p:"High"},{id:40,n:"CR9167",a:"Grants Mgmt",p:"High"},{id:41,n:"CR7291",a:"Human Resources",p:"High"},{id:42,n:"CR9023",a:"Human Resources",p:"High"},{id:43,n:"CR8640",a:"Human Resources",p:"High"},{id:44,n:"CR6992",a:"Human Resources",p:"High"},{id:45,n:"CR7187",a:"Dept-Specific",p:"Medium"},{id:46,n:"CR7824",a:"Dept-Specific",p:"Medium"},{id:47,n:"CR8013",a:"Dept-Specific",p:"Medium"},{id:48,n:"CR8024",a:"Dept-Specific",p:"Medium"},{id:49,n:"CR8025",a:"Dept-Specific",p:"Medium"},{id:50,n:"CR8026",a:"Dept-Specific",p:"Medium"},{id:51,n:"CR8027",a:"Dept-Specific",p:"Medium"},{id:52,n:"CR8230",a:"Dept-Specific",p:"Medium"},{id:53,n:"CR 7167",a:"Ops/Purchasing",p:"Medium"},{id:54,n:"CR 12201",a:"Dept-Specific",p:"Medium"},{id:55,n:"CR5719",a:"Dept-Specific",p:"Medium"},{id:56,n:"cr20983",a:"BI Admin",p:"Low"},{id:57,n:"CR7682b",a:"Ops/Purchasing",p:"Medium"},{id:58,n:"CR8192",a:"Dept-Specific",p:"Medium"},{id:59,n:"CR5867b",a:"Student Info",p:"High"},{id:60,n:"CR6469",a:"Student Info",p:"High"},{id:61,n:"CR5694b",a:"Ops/Purchasing",p:"Medium"},{id:62,n:"ZFI_BW_General",a:"Finance",p:"High"},{id:63,n:"CR8155",a:"BI Admin",p:"Low"}
 ];
@@ -185,7 +185,6 @@ function destroyAll(){Object.keys(charts).forEach(function(k){if(charts[k]){char
 function render(){
   var f=getFiltered(),s=getStats(f),hf=selArea||selPriority;
 
-  // Filter bar
   document.getElementById('filterHint').className=hf?'filter-hint hidden':'filter-hint';
   document.getElementById('clearBtn').className=hf?'clear-btn':'clear-btn hidden';
   document.getElementById('filterBar').className=currentTab>=2?'filter-bar hidden':'filter-bar';
@@ -194,32 +193,25 @@ function render(){
   if(selPriority)pills+='<span class="pill"><span class="pill-label">Priority:</span><span class="pill-val">'+selPriority+'</span><span class="pill-x" onclick="selPriority=null;render()">×</span></span>';
   document.getElementById('filterPills').innerHTML=pills;
 
-  // KPIs Tab 0
   document.getElementById('kpiRow0').innerHTML='<div class="kpi"><div class="kpi-label">Total BI Folders</div><div class="kpi-val">678</div><div class="kpi-sub">Entire platform</div></div><div class="kpi hot"><div class="kpi-label">CR Objects</div><div class="kpi-val">'+s.n+'</div><div class="kpi-sub">'+(hf?'Filtered':'Requiring conversion')+'</div></div><div class="kpi hot"><div class="kpi-label">Est. Hours</div><div class="kpi-val">'+s.hL+'–'+s.hH+'</div><div class="kpi-sub">'+HL+'–'+HH+' hrs per report</div></div><div class="kpi hot"><div class="kpi-label">FTE Months</div><div class="kpi-val">'+s.fL+'–'+s.fH+'</div><div class="kpi-sub">@ 160 hrs/month</div></div><div class="kpi"><div class="kpi-label">Active Folders</div><div class="kpi-val">660</div><div class="kpi-sub">97.3% active</div></div>';
 
-  // KPIs Tab 1
   document.getElementById('kpiRow1').innerHTML='<div class="kpi hot"><div class="kpi-label">High Priority</div><div class="kpi-val">'+s.hi+'</div><div class="kpi-sub">'+s.hi*HH+' hrs</div></div><div class="kpi"><div class="kpi-label">Medium Priority</div><div class="kpi-val">'+s.me+'</div><div class="kpi-sub">'+s.me*HH+' hrs</div></div><div class="kpi"><div class="kpi-label">Low Priority</div><div class="kpi-val">'+s.lo+'</div><div class="kpi-sub">'+s.lo*HH+' hrs</div></div><div class="kpi hot"><div class="kpi-label">Total Selected</div><div class="kpi-val">'+s.n+'</div><div class="kpi-sub">'+(hf?'Filtered':'All CR objects')+'</div></div>';
 
-  // Effort table
-  var rows=[{l:"Total CR Objects",v:s.n,c:"#f59e0b"},{l:"Avg Hours Per Report",v:HL+"–"+HH+" hrs",c:"#3b82f6"},{l:"Total Conversion Hours",v:s.hL+"–"+s.hH+" hrs",c:"#ef4444"},{l:"Working Hours/Month",v:"160 hrs",c:"#94a3b8"},{l:"Base FTE Months",v:s.fL+"–"+s.fH,c:"#f59e0b"},{l:"+ QA & Testing Buffer (2×)",v:(s.fL*2).toFixed(1)+"–"+(s.fH*2).toFixed(1),c:"#ef4444",hl:true}];
+  var rows=[{l:"Total CR Objects",v:s.n,c:"#f59e0b"},{l:"Avg Hours Per Report",v:HL+"–"+HH+" hrs",c:"#3b82f6"},{l:"Total Conversion Hours",v:s.hL.toLocaleString()+"–"+s.hH.toLocaleString()+" hrs",c:"#ef4444"},{l:"Working Hours/Month",v:"160 hrs",c:"#94a3b8"},{l:"Base FTE Months",v:s.fL+"–"+s.fH,c:"#f59e0b"},{l:"+ QA & Testing Buffer (2×)",v:(s.fL*2).toFixed(1)+"–"+(s.fH*2).toFixed(1),c:"#ef4444",hl:true}];
   document.getElementById('effortTable').innerHTML=rows.map(function(r){return'<div class="effort-row'+(r.hl?' highlight':'')+'"><span class="effort-label">'+r.l+'</span><span class="effort-val" style="color:'+r.c+'">'+r.v+'</span></div>'}).join('')+'<div class="recommend"><div class="recommend-label">Recommended Engagement</div><div class="recommend-val">1 FTE × 6–12 Months</div></div>';
 
-  // Phase cards
   var phases=[{q:"2026-Q1",p:"High",col:"#ef4444"},{q:"2026-Q2",p:"Medium",col:"#f59e0b"},{q:"2026-Q3",p:"Low",col:"#10b981"}];
   document.getElementById('phaseCards').innerHTML=phases.map(function(ph){
     var reps=RAW.filter(function(r){return r.p===ph.p}).length;
     var isSel=selPriority===ph.p;
-    return'<div class="phase-card" style="background:'+(isSel?'rgba(255,255,255,.05)':'rgba(255,255,255,.02)')+';border:1px solid '+(isSel?ph.col:'rgba(255,255,255,.06)')+'" onclick="selPriority=selPriority===\''+ph.p+'\'?null:\''+ph.p+'\';render()"><div class="phase-q" style="color:'+ph.col+'">'+ph.q+'</div><div class="phase-num">'+reps+'</div><div class="phase-sub">reports · '+reps*HH+' hrs</div><div class="phase-badge" style="color:'+ph.col+';background:rgba(255,255,255,.05)">'+ph.p+' Priority</div></div>'
+    return'<div class="phase-card" style="background:'+(isSel?'rgba(255,255,255,.05)':'rgba(255,255,255,.02)')+';border:1px solid '+(isSel?ph.col:'rgba(255,255,255,.06)')+'" onclick="selPriority=selPriority===\''+ph.p+'\'?null:\''+ph.p+'\';render()"><div class="phase-q" style="color:'+ph.col+'">'+ph.q+'</div><div class="phase-num">'+reps+'</div><div class="phase-sub">reports · '+(reps*HH).toLocaleString()+' hrs</div><div class="phase-badge" style="color:'+ph.col+';background:rgba(255,255,255,.05)">'+ph.p+' Priority</div></div>'
   }).join('');
 
-  // Detail table
   document.getElementById('detailTitle').textContent='CR Report Detail — '+f.length+' of '+RAW.length+' records';
   document.getElementById('detailSub').textContent=hf?'Showing filtered results':'All CR objects';
   document.getElementById('detailBody').innerHTML=f.map(function(r){return'<tr><td style="color:#f1f5f9;font-weight:600">'+r.n+'</td><td style="color:#94a3b8">'+r.a+'</td><td><span class="badge badge-'+r.p.toLowerCase()+'">'+r.p+'</span></td><td style="color:#f59e0b;font-weight:700">'+HL+'–'+HH+'</td></tr>'}).join('');
 
-  // Charts - destroy all, rebuild only for active tab
   destroyAll();
-
   if(currentTab===0) renderTab0(s);
   else if(currentTab===1) renderTab1(s);
   else if(currentTab===2) renderTab2();
@@ -227,8 +219,6 @@ function render(){
 
 function renderTab0(s){
   var aData=byAreaArr();
-
-  // Priority horizontal bar
   var prioLabels=["High","Medium","Low"];
   var prioCounts=[RAW.filter(function(r){return r.p==="High"}).length,RAW.filter(function(r){return r.p==="Medium"}).length,RAW.filter(function(r){return r.p==="Low"}).length];
   charts.prio=new Chart(document.getElementById('c_prio'),{type:'bar',
@@ -241,7 +231,6 @@ function renderTab0(s){
       onClick:function(e,el){if(el.length){var l=prioLabels[el[0].index];selPriority=selPriority===l?null:l;render()}}}
   });
 
-  // Quarter bar
   var qLabels=[],qHours=[],qColors=[];
   if(s.hi>0){qLabels.push("2026-Q1");qHours.push(s.hi*HH);qColors.push("#ef4444")}
   if(s.me>0){qLabels.push("2026-Q2");qHours.push(s.me*HH);qColors.push("#f59e0b")}
@@ -251,7 +240,6 @@ function renderTab0(s){
     options:{scales:{x:{grid:{display:false}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
   });
 
-  // Area horizontal bar (hours)
   charts.area0=new Chart(document.getElementById('c_area0'),{type:'bar',
     data:{labels:aData.map(function(d){return d[0]}),datasets:[{data:aData.map(function(d){return d[1]*HH}),
       backgroundColor:aData.map(function(d){return selArea&&selArea!==d[0]?'rgba(245,158,11,.13)':'#f59e0b'}),
@@ -265,8 +253,6 @@ function renderTab0(s){
 
 function renderTab1(s){
   var aData=byAreaArr();
-
-  // Area vertical bar (counts)
   charts.area1=new Chart(document.getElementById('c_area1'),{type:'bar',
     data:{labels:aData.map(function(d){return d[0]}),datasets:[{data:aData.map(function(d){return d[1]}),
       backgroundColor:aData.map(function(d){return selArea&&selArea!==d[0]?'rgba(245,158,11,.13)':'#f59e0b'}),
@@ -277,7 +263,6 @@ function renderTab1(s){
       onClick:function(e,el){if(el.length){var l=aData[el[0].index][0];selArea=selArea===l?null:l;render()}}}
   });
 
-  // Priority doughnut
   var pieLabels=["High","Medium","Low"];
   var pieCounts=[RAW.filter(function(r){return r.p==="High"}).length,RAW.filter(function(r){return r.p==="Medium"}).length,RAW.filter(function(r){return r.p==="Low"}).length];
   var pieColors=["#ef4444","#f59e0b","#10b981"];
@@ -293,7 +278,6 @@ function renderTab1(s){
 }
 
 function renderTab2(){
-  // Folder types horizontal bar
   var types=[["Date Archive",266],["Dept/Functional",130],["CR Object",57],["WebI Cache",28],["Pathlore",22],["Finance",20],["Inactive",18],["BI Admin",17],["Dashboard",16],["Other",104]];
   var tCols=["#f59e0b","#3b82f6","#ef4444","#10b981","#a78bfa","#ec4899","#06b6d4","#f97316","#84cc16","#e879f9"];
   charts.types=new Chart(document.getElementById('c_types'),{type:'bar',
@@ -301,21 +285,18 @@ function renderTab2(){
     options:{indexAxis:'y',scales:{x:{grid:{display:false},ticks:{color:'#475569'}},y:{grid:{display:false},ticks:{font:{size:10}}}}}
   });
 
-  // Depth vertical bar
   var depths=[["Level 1",33],["Level 2",119],["Level 3",246],["Level 4",196],["Level 5",75],["Level 6",9]];
   charts.depth=new Chart(document.getElementById('c_depth'),{type:'bar',
     data:{labels:depths.map(function(d){return d[0]}),datasets:[{data:depths.map(function(d){return d[1]}),backgroundColor:'#3b82f6',borderRadius:5,barThickness:40}]},
     options:{scales:{x:{grid:{display:false}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
   });
 
-  // Timeline line chart
   charts.timeline=new Chart(document.getElementById('c_timeline'),{type:'line',
     data:{labels:TL.map(function(d){return d.q}),datasets:[{data:TL.map(function(d){return d.c}),borderColor:'#f59e0b',backgroundColor:'rgba(245,158,11,.1)',fill:true,tension:.3,pointRadius:2,pointBackgroundColor:'#f59e0b',pointHoverRadius:5}]},
     options:{scales:{x:{grid:{display:false},ticks:{color:'#475569',maxRotation:45,font:{size:8},autoSkip:true,maxTicksLimit:15}},y:{grid:{color:'#1a2540'},ticks:{color:'#475569'}}}}
   });
 }
 
-// Tab switching
 document.querySelectorAll('.tab').forEach(function(btn){
   btn.addEventListener('click',function(){
     currentTab=parseInt(this.getAttribute('data-tab'));
